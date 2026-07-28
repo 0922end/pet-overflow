@@ -33,44 +33,42 @@ class OverlayService : Service() {
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;user-select:none;-webkit-user-select:none}
-body{background:transparent;overflow:hidden;width:100%;height:100%;display:flex;align-items:center;justify-content:center}
-.c{position:relative;width:64px;height:86px;cursor:pointer;margin-top:6px}
-.hd{position:absolute;top:0;left:4px;width:56px;height:44px;background:linear-gradient(180deg,#fff8f0,#ffe4d0);border-radius:50% 50% 45% 45%;z-index:1}
-.bd{position:absolute;top:38px;left:14px;width:36px;height:32px;background:linear-gradient(180deg,#ffe4d0,#ffdcc5);border-radius:50% 50% 40% 40%;z-index:0}
-.el{position:absolute;top:13px;left:14px}.er{position:absolute;top:13px;right:14px}
-.ey{width:10px;height:12px;background:radial-gradient(circle at 35% 30%,#64B5F6,#0D47A1);border-radius:50%;position:relative}
+body{background:transparent;overflow:visible;width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+.c{position:relative;width:60px;height:90px;cursor:pointer}
+.hd{position:absolute;top:4px;left:2px;width:56px;height:44px;background:linear-gradient(180deg,#fff8f0,#ffe4d0);border-radius:50% 50% 45% 45%;z-index:1}
+.bd{position:absolute;top:40px;left:12px;width:36px;height:34px;background:linear-gradient(180deg,#ffe4d0,#ffdcc5);border-radius:50% 50% 40% 40%;z-index:0}
+.el{position:absolute;top:16px;left:12px}.er{position:absolute;top:16px;right:12px}
+.ey{width:10px;height:12px;background:radial-gradient(circle at 35% 30%,#64B5F6,#0D47A1);border-radius:50%;position:relative;transition:none}
 .es{position:absolute;top:2px;left:3px;width:3px;height:3px;background:#fff;border-radius:50%}
-.ns{position:absolute;top:22px;left:50%;transform:translateX(-50%);width:4px;height:3px;background:#F48FB1;border-radius:50%;z-index:2}
-.mo{position:absolute;top:27px;left:50%;transform:translateX(-50%);width:7px;height:3px;border-bottom:2px solid #bbb;border-radius:0 0 50% 50%;z-index:2}
-.wh{position:absolute;width:14px;height:1px;background:#dcc8b8;z-index:0}
-/* 右脸胡须（猫的右侧，用户左侧）用left定位 */
-.wr1{left:-10px;transform:rotate(-15deg);top:20px}
-.wr2{left:-11px;transform:rotate(0deg);top:23px}
-.wr3{left:-10px;transform:rotate(15deg);top:26px}
-/* 左脸胡须（猫的左侧，用户右侧）用right定位 */
-.wl4{right:-10px;transform:rotate(15deg);top:20px}
-.wl5{right:-11px;transform:rotate(0deg);top:23px}
-.wl6{right:-10px;transform:rotate(-15deg);top:26px}
-.bl{position:absolute;top:24px;width:9px;height:5px;background:rgba(255,150,150,.25);border-radius:50%;z-index:0}
-.bll{left:4px}.blr{right:4px}
-.er-l{position:absolute;top:-4px;left:9px;z-index:2}.er-l::before{content:'';display:block;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:14px solid #ffe4d0}
+.ns{position:absolute;top:25px;left:50%;transform:translateX(-50%);width:4px;height:3px;background:#F48FB1;border-radius:50%;z-index:2}
+.mo{position:absolute;top:30px;left:50%;transform:translateX(-50%);width:7px;height:3px;border-bottom:2px solid #F48FB1;border-radius:0 0 50% 50%;z-index:2}
+.wh{position:absolute;width:13px;height:1px;background:#dcc8b8;z-index:0}
+.wr1{right:-10px;transform:rotate(15deg);top:22px}
+.wr2{right:-11px;transform:rotate(0deg);top:25px}
+.wr3{right:-10px;transform:rotate(-15deg);top:28px}
+.wl4{left:-10px;transform:rotate(-15deg);top:22px}
+.wl5{left:-11px;transform:rotate(0deg);top:25px}
+.wl6{left:-10px;transform:rotate(15deg);top:28px}
+.bl{position:absolute;top:27px;width:9px;height:5px;background:rgba(255,150,150,.25);border-radius:50%;z-index:0}
+.bll{left:2px}.blr{right:2px}
+.er-l{position:absolute;top:0;left:7px;z-index:2}.er-l::before{content:'';display:block;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:14px solid #ffe4d0}
 .er-l::after{content:'';position:absolute;top:5px;left:4px;width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:9px solid #f5c2c2}
-.er-r{position:absolute;top:-4px;right:9px;z-index:2}.er-r::before{content:'';display:block;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:14px solid #ffe4d0}
+.er-r{position:absolute;top:0;right:7px;z-index:2}.er-r::before{content:'';display:block;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:14px solid #ffe4d0}
 .er-r::after{content:'';position:absolute;top:5px;right:4px;width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:9px solid #f5c2c2}
-.col{position:absolute;top:36px;left:50%;transform:translateX(-50%);width:24px;height:4px;border-bottom:3px solid #42A5F5;border-radius:0 0 4px 4px;opacity:0;transition:opacity .3s;z-index:1}
+.col{position:absolute;top:42px;left:50%;transform:translateX(-50%);width:24px;height:5px;border-bottom:3px solid #42A5F5;border-radius:0 0 4px 4px;opacity:0;transition:opacity .3s;z-index:1}
 .col.on{opacity:1}
-.bel{position:absolute;top:39px;left:50%;transform:translateX(-50%);width:5px;height:5px;background:#FFD54F;border-radius:50%;opacity:0;transition:opacity .3s;z-index:1}
+.bel{position:absolute;top:45px;left:50%;transform:translateX(-50%);width:5px;height:5px;background:#FFD54F;border-radius:50%;opacity:0;transition:opacity .3s;z-index:1}
 .bel.on{opacity:1}
-.hat{position:absolute;top:-14px;left:50%;transform:translateX(-50%);opacity:0;transition:opacity .3s;z-index:3}
+.hat{position:absolute;top:-16px;left:50%;transform:translateX(-50%);opacity:0;transition:opacity .3s;z-index:5}
 .hat.on{opacity:1}
-.ht{width:20px;height:12px;background:#42A5F5;border-radius:2px 2px 0 0;margin:0 auto}
-.hb{width:28px;height:3px;background:#1E88E5;border-radius:1px;margin:-2px auto 0}
-.hbn{width:20px;height:2px;background:#1565C0;margin:-3px auto 0;border-radius:0 0 1px 1px}
-.cig{position:absolute;top:28px;right:-12px;opacity:0;transition:opacity .3s;transform:rotate(-10deg);z-index:3}
+.ht{width:22px;height:14px;background:#42A5F5;border-radius:3px 3px 0 0;margin:0 auto}
+.hb{width:30px;height:3px;background:#1E88E5;border-radius:1px;margin:-2px auto 0}
+.hbn{width:22px;height:3px;background:#1565C0;margin:-4px auto 0;border-radius:0 0 2px 2px}
+.cig{position:absolute;top:30px;right:-14px;opacity:0;transition:opacity .3s;transform:rotate(-10deg);z-index:3}
 .cig.on{opacity:1}
-.cb{width:12px;height:2px;background:#fff;border-radius:1px}
+.cb{width:14px;height:2px;background:#fff;border-radius:1px}
 .ct{position:absolute;right:-1px;top:-1px;width:3px;height:3px;background:#FF7043;border-radius:50%}
-.ms{position:absolute;top:-30px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.95);color:#1565C0;font-size:9px;padding:3px 8px;border-radius:8px;white-space:nowrap;opacity:0;pointer-events:none;box-shadow:0 2px 6px rgba(0,0,0,.1);z-index:5;font-family:sans-serif}
+.ms{position:absolute;top:-30px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.95);color:#1565C0;font-size:9px;padding:3px 8px;border-radius:8px;white-space:nowrap;opacity:0;pointer-events:none;box-shadow:0 2px 6px rgba(0,0,0,.1);z-index:10;font-family:sans-serif}
 .ms::after{content:'';position:absolute;bottom:-3px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:3px solid transparent;border-right:3px solid transparent;border-top:3px solid rgba(255,255,255,.95)}
 .ht-heart{position:absolute;pointer-events:none;font-size:10px;opacity:0;z-index:4}
 </style></head><body>
@@ -93,26 +91,24 @@ body{background:transparent;overflow:hidden;width:100%;height:100%;display:flex;
 <script>
 var EL=document.getElementById('EL'),ER=document.getElementById('ER'),MO=document.getElementById('MO')
 var CL=document.getElementById('CL'),BL=document.getElementById('BL'),HT=document.getElementById('HT'),CG=document.getElementById('CG')
-var MS=document.getElementById('MS'),C=document.getElementById('C'),t0=Date.now(),bw=0,blinkOn=true
+var MS=document.getElementById('MS'),C=document.getElementById('C'),t0=Date.now(),bc=0
 
-function ex(n){
-  // [elW,elH,erW,erH,moB,moBR,moW,moH,moT,moBg]
-  // 0:normal 1:happy 2:cry 3:kiss 4:tongue 5:wink
+function ey(n){
+  EL.style.transform='scaleY(1)';ER.style.transform='scaleY(1)'
   var a=[
-    ['10px','12px','10px','12px','2px solid #bbb','0 0 50% 50%','7px','3px','27px','transparent'],
-    ['8px','8px','8px','8px','none','50% 50% 0 0','8px','4px','26px','transparent'],
-    ['10px','10px','10px','10px','2px solid #bbb','0 0 50% 50%','5px','4px','28px','transparent'],
-    ['8px','8px','8px','8px','2px solid #F48FB1','50%','6px','6px','26px','transparent'],
-    ['8px','8px','8px','8px','none','0 0 5px 5px','7px','4px','27px','#F48FB1'],
-    ['10px','12px','0','2px','2px solid #bbb','0 0 50% 50%','8px','3px','27px','transparent']
+    ['10px','12px','10px','12px','2px solid #F48FB1','0 0 50% 50%','7px','3px','30px','transparent'],
+    ['8px','8px','8px','8px','none','50% 50% 0 0','8px','4px','29px','transparent'],
+    ['10px','10px','10px','10px','2px solid #F48FB1','0 0 50% 50%','5px','4px','31px','transparent'],
+    ['8px','8px','8px','8px','2px solid #F48FB1','50%','6px','6px','29px','transparent'],
+    ['8px','8px','8px','8px','none','0 0 5px 5px','7px','4px','30px','#F48FB1'],
+    ['10px','12px','0','2px','2px solid #F48FB1','0 0 50% 50%','8px','3px','30px','transparent']
   ]
   var i=a[n];EL.style.width=i[0];EL.style.height=i[1];ER.style.width=i[2];ER.style.height=i[3]
   MO.style.borderBottom=i[4];MO.style.borderRadius=i[5];MO.style.width=i[6];MO.style.height=i[7];MO.style.top=i[8];MO.style.background=i[9]
   ER.style.background=(n===5?'#1565C0':'radial-gradient(circle at 35% 30%,#64B5F6,#0D47A1)')
   ER.style.borderRadius=(n===5?'2px':'50%')
-  EL.style.opacity='1';ER.style.opacity='1'
 }
-ex(0);
+ey(0);
 
 var dc=0
 function td(){dc=(dc+1)%5;CL.className='col'+(dc>=1?' on':'');BL.className='bel'+(dc>=1?' on':'');HT.className='hat'+(dc>=2||dc===4?' on':'');CG.className='cig'+(dc>=3?' on':'')}
@@ -121,13 +117,13 @@ function sy(t){MS.textContent=t;MS.style.opacity='1';setTimeout(function(){MS.st
 function ht(){for(var i=0;i<4;i++){var h=document.createElement('div');h.className='ht-heart';h.textContent='♥';var s=8+Math.random()*8;h.style.fontSize=s+'px';h.style.left=(15+Math.random()*30)+'px';h.style.top=(20+Math.random()*20)+'px';h.style.color=['#FF4081','#FF80AB','#F48FB1'][Math.floor(Math.random()*3)];C.appendChild(h);var hs=Date.now();!function(e,s){function hf(){var a=(Date.now()-s)/1000;if(a>1.4){e.remove();return}var p=a/1.4;e.style.transform='translateY('+(-p*40)+'px)';e.style.opacity=(1-p).toFixed(2);requestAnimationFrame(hf)}hf()}(h,hs)}}
 function tap(){
   var r=Math.random()
-  if(r<0.14){ex(1);sy('嘿嘿～')}else if(r<0.28){ex(2);sy('呜…戳疼了')}else if(r<0.42){ex(3);sy('mua～')}else if(r<0.56){ex(4);sy('略略略')}else if(r<0.7){ex(5);sy('想我了？')}else{ex(0);sy(sa[Math.floor(Math.random()*sa.length)])}
-  ht();setTimeout(function(){ex(0)},2000)
+  if(r<0.14){ey(1);sy('嘿嘿～')}else if(r<0.28){ey(2);sy('呜…戳疼了')}else if(r<0.42){ey(3);sy('mua～')}else if(r<0.56){ey(4);sy('略略略')}else if(r<0.7){ey(5);sy('想我了？')}else{ey(0);sy(sa[Math.floor(Math.random()*sa.length)])}
+  ht();setTimeout(function(){ey(0)},2000)
 }
 function longpress(){td();var d=['素猫','项圈','+礼帽','+抽烟','全武装'];sy(d[dc])}
-!function anim(){var t=(Date.now()-t0)/1000;C.style.transform='translateY('+Math.sin(t*1.3)*3+'px)';bw-=16;if(bw<=0){EL.style.opacity=blinkOn?'0.1':'1';ER.style.opacity=blinkOn?'0.1':'1';blinkOn=!blinkOn;if(!blinkOn)bw=120;else bw=2500+Math.random()*2500}requestAnimationFrame(anim)}()
-bw=2000;
-setInterval(function(){var r=Math.random();if(r<0.2){var e=[1,2,3,4,5][Math.floor(Math.random()*5)];ex(e);setTimeout(function(){ex(0)},3000)}},12000);
+!function anim(){var t=(Date.now()-t0)/1000;C.style.transform='translateY('+Math.sin(t*1.3)*3+'px)';bc-=16;if(bc<=0){EL.style.transform='scaleY(0.1)';ER.style.transform='scaleY(0.1)';setTimeout(function(){EL.style.transform='scaleY(1)';ER.style.transform='scaleY(1)'},100);bc=2500+Math.random()*2500}requestAnimationFrame(anim)}()
+bc=2000;
+setInterval(function(){var r=Math.random();if(r<0.2){var e=[1,2,3,4,5][Math.floor(Math.random()*5)];ey(e);setTimeout(function(){ey(0)},3000)}},12000);
 </script></body></html>
         """.trimIndent()
     }
@@ -193,7 +189,7 @@ setInterval(function(){var r=Math.random();if(r<0.2){var e=[1,2,3,4,5][Math.floo
         container.addView(wv, FrameLayout.LayoutParams(-1, -1))
 
         val d = resources.displayMetrics.density
-        val sz = (110 * d).toInt()
+        val sz = (120 * d).toInt()
 
         val p = WindowManager.LayoutParams(
             sz, sz,
