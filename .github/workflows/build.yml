@@ -20,15 +20,11 @@ jobs:
           gradle-version: "8.5"
       - name: Build with Gradle
         run: |
-          gradle assembleDebug --stacktrace
+          gradle assembleDebug --stacktrace 2>&1 | tee build.log
       - name: List outputs
         run: |
-          echo "=== app/build/outputs ==="
           ls -la app/build/outputs/apk/debug/ 2>/dev/null || echo "no debug dir"
-          echo "=== app/build/outputs full ==="
-          find app/build -name "*.apk" 2>/dev/null
-          echo "=== gradle home ==="
-          find $HOME/.gradle -name "*.apk" 2>/dev/null | head -5
+          find app/build -name "*.apk" 2>/dev/null || echo "no apk in app/build"
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
