@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Pet Overflow</string>
+    <string name="channel_name">棒出内志</string>
+    <string name="channel_desc">要示一管理布无运译</string>
 </resources>
