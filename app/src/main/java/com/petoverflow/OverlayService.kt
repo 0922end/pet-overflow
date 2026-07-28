@@ -10,6 +10,8 @@ import android.graphics.PixelFormat
 import android.graphics.Color
 import android.os.Build
 import android.os.IBinder
+import android.os.Handler
+import android.os.Looper
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
@@ -25,6 +27,7 @@ class OverlayService : Service() {
             private set
         private const val NOTIFICATION_ID = 1001
         private const val CHANNEL_ID = "pet_channel"
+        private const val LONG_PRESS_MS = 600L
         private val HTML = """
 <!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
@@ -37,11 +40,15 @@ body{background:transparent;overflow:hidden;width:100%;height:100%;display:flex;
 .el{position:absolute;top:18px;left:16px}.er{position:absolute;top:18px;right:16px}
 .ey{width:12px;height:14px;background:radial-gradient(circle at 35% 30%,#64B5F6,#0D47A1);border-radius:50%;position:relative;transition:all .15s}
 .es{position:absolute;top:2px;left:3px;width:4px;height:4px;background:#fff;border-radius:50%}
-.ns{position:absolute;top:30px;left:50%;transform:translateX(-50%);width:5px;height:4px;background:#F48FB1;border-radius:50%;z-index:2}
-.mo{position:absolute;top:34px;left:50%;transform:translateX(-50%);width:8px;height:4px;border-bottom:2px solid #ccc;border-radius:0 0 50% 50%;transition:all .15s;z-index:2}
-.wh{position:absolute;top:27px;width:18px;height:1px;background:#e8d5c4;z-index:0}
-.wh1{left:-12px;transform:rotate(-10deg)}.wh2{left:-14px;top:30px;transform:rotate(3deg)}.wh3{left:-12px;top:33px;transform:rotate(13deg)}
-.wh4{right:-12px;transform:rotate(10deg)}.wh5{right:-14px;top:30px;transform:rotate(-3deg)}.wh6{right:-12px;top:33px;transform:rotate(-13deg)}
+.ns{position:absolute;top:27px;left:50%;transform:translateX(-50%);width:5px;height:4px;background:#F48FB1;border-radius:50%;z-index:2}
+.mo{position:absolute;top:33px;left:50%;transform:translateX(-50%);width:8px;height:4px;border-bottom:2px solid #bbb;border-radius:0 0 50% 50%;transition:all .15s;z-index:2}
+.wh{position:absolute;top:25px;width:16px;height:1px;background:#dcc8b8;z-index:0}
+.w1{left:-10px;transform:rotate(-15deg);top:24px}
+.w2{left:-12px;transform:rotate(0deg);top:27px}
+.w3{left:-10px;transform:rotate(15deg);top:30px}
+.w4{right:-10px;transform:rotate(15deg);top:24px}
+.w5{right:-12px;transform:rotate(0deg);top:27px}
+.w6{right:-10px;transform:rotate(-15deg);top:30px}
 .bl{position:absolute;top:29px;width:11px;height:6px;background:rgba(255,150,150,.25);border-radius:50%;z-index:0}
 .bll{left:3px}.blr{right:3px}
 .er-l{position:absolute;top:-5px;left:10px;z-index:2}.er-l::before{content:'';display:block;width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-bottom:17px solid #ffe4d0}
@@ -69,8 +76,8 @@ body{background:transparent;overflow:hidden;width:100%;height:100%;display:flex;
 <div class="er-l"></div><div class="er-r"></div>
 <div class="bd"></div>
 <div class="hd">
-<div class="wh wh1"></div><div class="wh wh2"></div><div class="wh wh3"></div>
-<div class="wh wh4"></div><div class="wh wh5"></div><div class="wh wh6"></div>
+<div class="wh w1"></div><div class="wh w2"></div><div class="wh w3"></div>
+<div class="wh w4"></div><div class="wh w5"></div><div class="wh w6"></div>
 <div class="bl bll"></div><div class="bl blr"></div>
 <div class="el"><div class="ey" id="EL"><div class="es"></div></div></div>
 <div class="er"><div class="ey" id="ER"><div class="es"></div></div></div>
@@ -86,12 +93,12 @@ var EL=document.getElementById('EL'),ER=document.getElementById('ER'),MO=documen
 var CL=document.getElementById('CL'),BL=document.getElementById('BL'),HT=document.getElementById('HT'),CG=document.getElementById('CG')
 var MS=document.getElementById('MS'),C=document.getElementById('C'),t0=Date.now(),bw=0
 function ex(n){
-  E=['11px','13px','11px','13px','2px solid #ccc','0 0 50% 50%','8px','4px','30px','transparent',
-      '9px','9px','9px','9px','none','50% 50% 0 0','10px','5px','29px','transparent',
-      '11px','11px','11px','11px','2px solid #ccc','0 0 50% 50%','6px','5px','31px','transparent',
-      '9px','9px','9px','9px','2px solid #F48FB1','50%','7px','7px','29px','transparent',
-      '9px','9px','9px','9px','none','0 0 6px 6px','8px','5px','30px','#F48FB1',
-      '11px','13px','0','2px','2px solid #ccc','0 0 50% 50%','10px','4px','30px','transparent']
+  E=['11px','13px','11px','13px','2px solid #bbb','0 0 50% 50%','8px','4px','33px','transparent',
+      '9px','9px','9px','9px','none','50% 50% 0 0','10px','5px','32px','transparent',
+      '11px','11px','11px','11px','2px solid #bbb','0 0 50% 50%','6px','5px','34px','transparent',
+      '9px','9px','9px','9px','2px solid #F48FB1','50%','7px','7px','32px','transparent',
+      '9px','9px','9px','9px','none','0 0 6px 6px','8px','5px','33px','#F48FB1',
+      '11px','13px','0','2px','2px solid #bbb','0 0 50% 50%','10px','4px','33px','transparent']
   var i=n*10;EL.style.width=E[i];EL.style.height=E[i+1];ER.style.width=E[i+2];ER.style.height=E[i+3]
   MO.style.borderBottom=E[i+4];MO.style.borderRadius=E[i+5];MO.style.width=E[i+6];MO.style.height=E[i+7];MO.style.top=E[i+8];MO.style.background=E[i+9]
   if(n===5){ER.style.background='#1565C0';ER.style.borderRadius='2px'}else{ER.style.background='radial-gradient(circle at 35% 30%,#64B5F6,#0D47A1)';ER.style.borderRadius='50%'}
@@ -102,15 +109,12 @@ function td(){dc=(dc+1)%5;CL.className='col'+(dc>=1?' on':'');BL.className='bel'
 var sa=['嗯？','干嘛～','嘿嘿','喵～','戳我干嘛','痒！','再戳生气了','呜…','手好闲','哼！','想我了？','mua～','乖']
 function sy(t){MS.textContent=t;MS.style.opacity='1';setTimeout(function(){MS.style.opacity='0'},1500)}
 function ht(){for(var i=0;i<5;i++){var h=document.createElement('div');h.className='ht-heart';h.textContent='♥';var s=10+Math.random()*12;h.style.fontSize=s+'px';h.style.left=(20+Math.random()*40)+'px';h.style.top=(25+Math.random()*25)+'px';h.style.color=['#FF4081','#FF80AB','#F48FB1'][Math.floor(Math.random()*3)];C.appendChild(h);var hs=Date.now();!function(e,s){function hf(){var a=(Date.now()-s)/1000;if(a>1.6){e.remove();return}var p=a/1.6;e.style.transform='translateY('+(-p*50)+'px)';e.style.opacity=(1-p).toFixed(2);requestAnimationFrame(hf)}hf()}(h,hs)}}
-C.onclick=function(){
+function tap(){
   var r=Math.random()
   if(r<0.14){ex(1);sy('嘿嘿～')}else if(r<0.28){ex(2);sy('呜…戳疼了')}else if(r<0.42){ex(3);sy('mua～')}else if(r<0.56){ex(4);sy('略略略')}else if(r<0.7){ex(5);sy('想我了？')}else{ex(0);sy(sa[Math.floor(Math.random()*sa.length)])}
   ht();setTimeout(function(){ex(0)},2000)
 }
-var lp=null
-C.addEventListener('touchstart',function(e){lp=setTimeout(function(){td();var d=['素猫','项圈','+礼帽','+抽烟','全武装'];sy(d[dc]);lp=null},600)})
-C.addEventListener('touchend',function(){if(lp){clearTimeout(lp);lp=null}})
-C.addEventListener('touchmove',function(){if(lp){clearTimeout(lp);lp=null}})
+function longpress(){td();var d=['素猫','项圈','+礼帽','+抽烟','全武装'];sy(d[dc])}
 !function anim(){var t=(Date.now()-t0)/1000;C.style.transform='translateY('+Math.sin(t*1.3)*4+'px)';bw-=16;if(bw<=0){EL.style.transform='scaleY(0.1)';ER.style.transform='scaleY(0.1)';setTimeout(function(){EL.style.transform='scaleY(1)';ER.style.transform='scaleY(1)'},120);bw=2500+Math.random()*2500}requestAnimationFrame(anim)}()
 bw=2000;
 setInterval(function(){var r=Math.random();if(r<0.2){var e=[1,2,3,4,5][Math.floor(Math.random()*5)];ex(e);setTimeout(function(){ex(0)},3000)}},12000);
@@ -126,6 +130,8 @@ setInterval(function(){var r=Math.random();if(r<0.2){var e=[1,2,3,4,5][Math.floo
     private var itx = 0f
     private var ity = 0f
     private var dragging = false
+    private var longPressed = false
+    private val handler = Handler(Looper.getMainLooper())
 
     override fun onCreate() {
         super.onCreate()
@@ -142,6 +148,7 @@ setInterval(function(){var r=Math.random();if(r<0.2){var e=[1,2,3,4,5][Math.floo
 
     override fun onDestroy() {
         isRunning = false
+        handler.removeCallbacksAndMessages(null)
         overlayView?.let { if (it.isAttachedToWindow) try { wm.removeView(it) } catch (_: Exception) {} }
         super.onDestroy()
     }
@@ -193,24 +200,34 @@ setInterval(function(){var r=Math.random();if(r<0.2){var e=[1,2,3,4,5][Math.floo
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
                     dragging = false
+                    longPressed = false
                     ix = p.x; iy = p.y
                     itx = event.rawX; ity = event.rawY
+                    handler.postDelayed({
+                        longPressed = true
+                        wv?.evaluateJavascript("javascript:longpress()", null)
+                    }, LONG_PRESS_MS)
                     true
                 }
                 MotionEvent.ACTION_MOVE -> {
                     val dx = event.rawX - itx
                     val dy = event.rawY - ity
-                    if (Math.sqrt((dx * dx + dy * dy).toDouble()) > 10) dragging = true
+                    if (Math.sqrt((dx * dx + dy * dy).toDouble()) > 10) {
+                        dragging = true
+                        handler.removeCallbacksAndMessages(null)
+                    }
                     p.x = ix + dx.toInt()
                     p.y = iy + dy.toInt()
                     wm.updateViewLayout(container, p)
                     true
                 }
                 MotionEvent.ACTION_UP -> {
-                    if (!dragging) {
-                        wv?.evaluateJavascript("javascript:(function(){if(window.C&&C.onclick)C.onclick()})()", null)
+                    handler.removeCallbacksAndMessages(null)
+                    if (!dragging && !longPressed) {
+                        wv?.evaluateJavascript("javascript:tap()", null)
                     }
                     dragging = false
+                    longPressed = false
                     true
                 }
                 else -> true
