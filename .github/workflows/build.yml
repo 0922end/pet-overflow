@@ -7,6 +7,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: List source files
+        run: |
+          find . -name "*.kt" -o -name "*.kts" -o -name "*.xml" -o -name "*.gradle" | sort
+          echo "---"
+          cat app/build.gradle.kts
+          echo "---"
+          cat settings.gradle.kts 2>/dev/null || echo "no settings"
+          echo "---"
+          cat app/src/main/AndroidManifest.xml 2>/dev/null || echo "no manifest"
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -20,25 +29,14 @@ jobs:
           gradle-version: "8.5"
       - name: Build with Gradle
         run: |
-          gradle assembleDebug --stacktrace 2>&1 | tee build.log
-      - name: Find APK
+          gradle assembleDebug --stacktrace 2>&1
+      - name: Check outputs
         run: |
-          echo "=== search workspace ==="
-          find $GITHUB_WORKSPACE -name "*.apk" -type f 2>/dev/null
-          echo "=== search gradle user home ==="
-          find /home/runner/.gradle -name "*.apk" -type f 2>/dev/null
-          echo "=== search android sdk ==="
-          find /usr/local/lib/android -name "*.apk" -type f 2>/dev/null
-          echo "=== build dir ==="
-          ls -laR build/ 2>/dev/null | head -30
-          echo "=== app build dir ==="
-          ls -laR app/build/ 2>/dev/null | head -30
-      - name: Try gradle properties
-        run: |
-          gradle properties 2>&1 | grep -i -E "buildDir|output|apk" | head -10
-      - name: Upload build log
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-log
-          path: build.log
+          echo "=== buildDir ==="
+          ls -la build/ 2>/dev/null || echo "no build dir"
+          echo "=== app/build ==="
+          ls -la app/build/ 2>/dev/null || echo "no app/build dir"
+          echo "=== find any apk ==="
+          find / -name "*.apk" -type f 2>/dev/null || echo "no apk found anywhere"
+          echo "=== check intermediates ==="
+          ls -laR app/build/intermediates/apk/ 2>/dev/null | head -20 || echo "no intermediates"
