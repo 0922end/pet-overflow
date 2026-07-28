@@ -21,12 +21,20 @@ jobs:
       - name: Build with Gradle
         run: |
           gradle assembleDebug --stacktrace 2>&1 | tee build.log
-      - name: List outputs
+      - name: Find APK everywhere
         run: |
-          ls -la app/build/outputs/apk/debug/ 2>/dev/null || echo "no debug dir"
-          find app/build -name "*.apk" 2>/dev/null || echo "no apk in app/build"
+          find / -type f -name "*.apk" 2>/dev/null > apk-locations.txt
+          cat apk-locations.txt
+          head -1 apk-locations.txt | xargs -I{} cp {} pet-overflow.apk 2>/dev/null || echo "no apk found"
       - name: Upload APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: pet-overflow-apk
-          path: "**/*.apk"
+          path: pet-overflow.apk
+      - name: Upload search log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: apk-locations
+          path: apk-locations.txt
