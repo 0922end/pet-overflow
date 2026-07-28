@@ -7,15 +7,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: List source files
-        run: |
-          find . -name "*.kt" -o -name "*.kts" -o -name "*.xml" -o -name "*.gradle" | sort
-          echo "---"
-          cat app/build.gradle.kts
-          echo "---"
-          cat settings.gradle.kts 2>/dev/null || echo "no settings"
-          echo "---"
-          cat app/src/main/AndroidManifest.xml 2>/dev/null || echo "no manifest"
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -29,14 +20,19 @@ jobs:
           gradle-version: "8.5"
       - name: Build with Gradle
         run: |
-          gradle assembleDebug --stacktrace 2>&1
-      - name: Check outputs
+          gradle assembleDebug --stacktrace 2>&1 | tee build.log
+      - name: Find APK
         run: |
-          echo "=== buildDir ==="
-          ls -la build/ 2>/dev/null || echo "no build dir"
-          echo "=== app/build ==="
-          ls -la app/build/ 2>/dev/null || echo "no app/build dir"
-          echo "=== find any apk ==="
-          find / -name "*.apk" -type f 2>/dev/null || echo "no apk found anywhere"
-          echo "=== check intermediates ==="
-          ls -laR app/build/intermediates/apk/ 2>/dev/null | head -20 || echo "no intermediates"
+          find /home/runner /github -name "*.apk" -type f 2>/dev/null > apk-list.txt
+          cat apk-list.txt
+          if [ -s apk-list.txt ]; then
+            cp $(head -1 apk-list.txt) pet-overflow.apk
+            echo "APK found!"
+          else
+            echo "NO APK FOUND"
+          fi
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: pet-overflow-apk
+          path: pet-overflow.apk
