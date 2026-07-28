@@ -100,8 +100,8 @@ class OverlayService : Service() {
         webView = overlayView.findViewById(R.id.pet_webview)
         webView?.settings?.apply {
             javaScriptEnabled = true
-            setBackgroundColor(0x00000000)
         }
+        webView?.setBackgroundColor(0x00000000)
         webView?.setWebViewClient(WebViewClient())
         webView?.loadUrl("file:///android_asset/pet.html")
 
