@@ -18,6 +18,7 @@ body {
     position: relative;
     width: 100px;
     height: 100px;
+    cursor: pointer;
 }
 .whale {
     width: 100px;
@@ -26,6 +27,10 @@ body {
     border-radius: 50% 50% 45% 45%;
     position: relative;
     box-shadow: 0 4px 15px rgba(21, 101, 192, 0.4);
+    transition: filter 0.15s;
+}
+.whale:active {
+    filter: brightness(1.3);
 }
 .whale-tail {
     position: absolute;
@@ -123,6 +128,34 @@ body {
     top: 50%;
     transform: translate(-50%, -50%);
 }
+.speech-bubble {
+    position: absolute;
+    top: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255,255,255,0.9);
+    color: #1565C0;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 10px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+.speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid rgba(255,255,255,0.9);
+}
 </style>
 </head>
 <body>
@@ -131,7 +164,7 @@ body {
         <div class="whale-belly"></div>
         <div class="whale-eye" id="eye"></div>
         <div class="whale-eye-shine"></div>
-        <div class="whale-cheek"></div>
+        <div class="whale-cheek" id="cheek"></div>
         <div class="whale-mouth"></div>
         <div class="fin"></div>
         <div class="whale-spout" id="spout">
@@ -141,6 +174,7 @@ body {
         </div>
     </div>
     <div class="whale-tail" id="tail"></div>
+    <div class="speech-bubble" id="speech"></div>
 </div>
 
 <script>
@@ -148,27 +182,38 @@ var container = document.getElementById('whaleContainer');
 var whale = document.getElementById('whale');
 var tail = document.getElementById('tail');
 var eye = document.getElementById('eye');
+var cheek = document.getElementById('cheek');
 var spout = document.getElementById('spout');
+var speech = document.getElementById('speech');
 var startTime = Date.now();
+
+var replies = [
+    '干嘛戳我～',
+    '痒——！',
+    '再戳我要生气了喔',
+    '呜…',
+    '你是戳戳怪吗',
+    '好啦好啦我在啦',
+    '别戳了别戳了',
+    '再一下我就……',
+    '哼！',
+    '楠楠你手好闲',
+];
 
 function frame() {
     var t = (Date.now() - startTime) / 1000;
 
-    // 上下浮动
     var floatY = Math.sin(t * 1.2) * 6;
     var floatRot = Math.sin(t * 1.2) * 2;
     container.style.transform = 'translateY(' + floatY + 'px) rotate(' + floatRot + 'deg)';
 
-    // 尾巴摇动
     var tailRot = Math.sin(t * 2.5) * 12;
     tail.style.transform = 'rotate(' + tailRot + 'deg)';
 
-    // 眨眼 (每3.5秒眨一次)
     var blinkPhase = (t % 3.5) / 3.5;
     var eyeScaleY = blinkPhase > 0.92 && blinkPhase < 0.98 ? 0.1 : 1;
     eye.style.transform = 'scaleY(' + eyeScaleY + ')';
 
-    // 喷水 (每4秒喷一次)
     var spoutPhase = (t % 4) / 4;
     if (spoutPhase < 0.3) {
         spout.style.opacity = (0.8 - spoutPhase * 2.6).toFixed(2);
@@ -182,7 +227,14 @@ function frame() {
 
 frame();
 
-// 爱心泡泡
+function showSpeech(text) {
+    speech.textContent = text;
+    speech.style.opacity = '1';
+    setTimeout(function() {
+        speech.style.opacity = '0';
+    }, 1500);
+}
+
 function bubble() {
     for (var i = 0; i < 5; i++) {
         var b = document.createElement('div');
@@ -193,28 +245,35 @@ function bubble() {
         b.style.fontSize = (size * 0.6) + 'px';
         b.style.left = (30 + Math.random() * 40) + 'px';
         b.style.top = (20 + Math.random() * 20) + 'px';
-        b.style.animation = 'none';
         b.style.opacity = '1';
         container.appendChild(b);
         var start = Date.now();
-        function animateBubble(bubbleEl, startTime) {
-            var elapsed = (Date.now() - startTime) / 1000;
-            if (elapsed > 1.5) { bubbleEl.remove(); return; }
-            var progress = elapsed / 1.5;
-            bubbleEl.style.transform = 'translateY(' + (-progress * 80) + 'px) scale(' + (0.5 + progress * 0.7) + ')';
-            bubbleEl.style.opacity = (1 - progress).toFixed(2);
-            requestAnimationFrame(function() { animateBubble(bubbleEl, startTime); });
-        }
-        animateBubble(b, start);
+        (function(el, s) {
+            function anim() {
+                var elapsed = (Date.now() - s) / 1000;
+                if (elapsed > 1.5) { el.remove(); return; }
+                var p = elapsed / 1.5;
+                el.style.transform = 'translateY(' + (-p * 80) + 'px) scale(' + (0.5 + p * 0.7) + ')';
+                el.style.opacity = (1 - p).toFixed(2);
+                requestAnimationFrame(anim);
+            }
+            anim();
+        })(b, start);
     }
 }
 
-document.addEventListener('click', function() { bubble(); });
+container.addEventListener('click', function(e) {
+    e.stopPropagation();
+    var msg = replies[Math.floor(Math.random() * replies.length)];
+    showSpeech(msg);
+    bubble();
 
-// 自动偶尔冒泡
-setInterval(function() {
-    if (Math.random() > 0.7) bubble();
-}, 8000);
+    cheek.style.transition = 'background 0.2s';
+    cheek.style.background = 'rgba(255,80,80,0.6)';
+    setTimeout(function() {
+        cheek.style.background = 'rgba(255,150,150,0.4)';
+    }, 300);
+});
 </script>
 </body>
 </html>
