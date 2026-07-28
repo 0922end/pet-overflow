@@ -4,265 +4,500 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-    background: transparent;
-    overflow: hidden;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    -webkit-user-select: none;
-    user-select: none;
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+    background:transparent;overflow:hidden;
+    width:100%;height:100%;
+    display:flex;align-items:center;justify-content:center;
+    -webkit-user-select:none;user-select:none;
 }
-.whale-container {
-    position: relative;
-    width: 110px;
-    height: 110px;
-    cursor: pointer;
-    -webkit-user-select: none;
-    user-select: none;
+.cat{
+    position:relative;width:76px;height:90px;cursor:pointer;
+    -webkit-user-select:none;user-select:none;
 }
-.body {
-    position: absolute;
-    width: 80px;
-    height: 65px;
-    background: linear-gradient(135deg, #64B5F6 0%, #1E88E5 50%, #0D47A1 100%);
-    border-radius: 50% 55% 50% 50%;
-    top: 25px;
-    left: 8px;
-    box-shadow: 0 4px 20px rgba(13,71,161,0.3), inset -5px -5px 15px rgba(0,0,0,0.1), inset 5px 5px 15px rgba(255,255,255,0.15);
-    pointer-events: none;
+/* 身体 */
+.body{
+    position:absolute;bottom:0;left:14px;
+    width:48px;height:38px;
+    background:linear-gradient(180deg,#fff 0%,#f5f5f5 100%);
+    border-radius:50% 50% 45% 45%;
+    box-shadow:0 2px 8px rgba(0,0,0,0.06);
+    pointer-events:none;
 }
-.belly {
-    position: absolute;
-    width: 45px;
-    height: 30px;
-    background: rgba(255,255,255,0.2);
-    border-radius: 50%;
-    top: 45px;
-    left: 20px;
-    pointer-events: none;
+/* 头 */
+.head{
+    position:absolute;top:6px;left:6px;
+    width:64px;height:56px;
+    background:linear-gradient(180deg,#fff 0%,#fafafa 100%);
+    border-radius:50% 50% 45% 45%;
+    box-shadow:0 3px 12px rgba(0,0,0,0.07);
+    pointer-events:none;
 }
-.tail {
-    position: absolute;
-    right: -8px;
-    top: 40px;
-    width: 0;
-    height: 0;
-    border-top: 14px solid transparent;
-    border-bottom: 14px solid transparent;
-    border-right: 22px solid #1E88E5;
-    filter: drop-shadow(2px 0 4px rgba(30,136,229,0.4));
-    transform-origin: left center;
-    pointer-events: none;
+/* 耳朵左 */
+.ear-l{
+    position:absolute;top:-2px;left:6px;
+    width:0;height:0;
+    border-left:10px solid transparent;
+    border-right:10px solid transparent;
+    border-bottom:18px solid #fff;
+    filter:drop-shadow(0 1px 2px rgba(0,0,0,0.05));
+    pointer-events:none;
 }
-.eye {
-    position: absolute;
-    width: 12px;
-    height: 14px;
-    background: radial-gradient(circle at 40% 35%, #555, #1A237E);
-    border-radius: 50%;
-    top: 35px;
-    left: 38px;
-    pointer-events: none;
+.ear-l-inner{
+    position:absolute;top:5px;left:10px;
+    width:0;height:0;
+    border-left:6px solid transparent;
+    border-right:6px solid transparent;
+    border-bottom:12px solid #FFCDD2;
+    pointer-events:none;
 }
-.eye-shine {
-    position: absolute;
-    width: 5px;
-    height: 5px;
-    background: white;
-    border-radius: 50%;
-    top: 36px;
-    left: 40px;
-    pointer-events: none;
+/* 耳朵右 */
+.ear-r{
+    position:absolute;top:-2px;right:6px;
+    width:0;height:0;
+    border-left:10px solid transparent;
+    border-right:10px solid transparent;
+    border-bottom:18px solid #fff;
+    filter:drop-shadow(0 1px 2px rgba(0,0,0,0.05));
+    pointer-events:none;
 }
-.blush {
-    position: absolute;
-    width: 14px;
-    height: 8px;
-    background: rgba(255,150,150,0.35);
-    border-radius: 50%;
-    top: 48px;
-    left: 50px;
-    transition: all 0.2s;
-    pointer-events: none;
+.ear-r-inner{
+    position:absolute;top:5px;right:10px;
+    width:0;height:0;
+    border-left:6px solid transparent;
+    border-right:6px solid transparent;
+    border-bottom:12px solid #FFCDD2;
+    pointer-events:none;
 }
-.mouth {
-    position: absolute;
-    width: 10px;
-    height: 5px;
-    border-bottom: 2px solid #0D47A1;
-    border-radius: 0 0 50% 50%;
-    top: 52px;
-    left: 44px;
-    pointer-events: none;
+/* 眼睛 */
+.eye-l,.eye-r{
+    position:absolute;top:22px;
+    width:12px;height:14px;
+    background:radial-gradient(circle at 40% 35%,#42A5F5,#1565C0);
+    border-radius:50%;
+    box-shadow:0 0 3px rgba(21,101,192,0.2);
+    transition:all 0.15s;
+    pointer-events:none;
 }
-.spout {
-    position: absolute;
-    top: 18px;
-    left: 40px;
-    display: flex;
-    gap: 2px;
-    opacity: 0;
-    pointer-events: none;
+.eye-l{left:14px;}
+.eye-r{right:14px;}
+.eye-shine{
+    position:absolute;top:23px;
+    width:4px;height:4px;
+    background:#fff;border-radius:50%;
+    pointer-events:none;
 }
-.spout-drop {
-    width: 4px;
-    height: 7px;
-    background: linear-gradient(to bottom, rgba(100,181,246,0.8), rgba(100,181,246,0.2));
-    border-radius: 50%;
+.eye-shine.ell{left:16px;}
+.eye-shine.erl{right:16px;}
+
+/* 鼻子 */
+.nose{
+    position:absolute;top:32px;left:50%;
+    transform:translateX(-50%);
+    width:5px;height:4px;
+    background:#FFAB91;
+    border-radius:50% 50% 40% 40%;
+    pointer-events:none;
 }
-.fin {
-    position: absolute;
-    width: 18px;
-    height: 12px;
-    background: #1E88E5;
-    border-radius: 60% 40% 50% 50%;
-    top: 42px;
-    left: -6px;
-    transform: rotate(-25deg);
-    pointer-events: none;
+/* 嘴巴 */
+.mouth{
+    position:absolute;top:36px;left:50%;
+    transform:translateX(-50%);
+    width:8px;height:4px;
+    border-bottom:2px solid #bbb;
+    border-radius:0 0 50% 50%;
+    transition:all 0.15s;
+    pointer-events:none;
 }
-.heart {
-    position: absolute;
-    pointer-events: none;
-    font-size: 16px;
-    opacity: 0;
+/* 胡须 */
+.whisker{
+    position:absolute;top:30px;
+    width:16px;height:1px;
+    background:#ddd;
+    pointer-events:none;
 }
-.msg {
-    position: absolute;
-    top: -38px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(255,255,255,0.95);
-    color: #1565C0;
-    font-size: 11px;
-    padding: 5px 12px;
-    border-radius: 12px;
-    white-space: nowrap;
-    opacity: 0;
-    transition: opacity 0.25s;
-    pointer-events: none;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.12);
-    font-family: sans-serif;
+.whisker.w1{left:-10px;transform:rotate(-10deg);}
+.whisker.w2{left:-12px;top:33px;transform:rotate(5deg);}
+.whisker.w3{left:-10px;top:36px;transform:rotate(15deg);}
+.whisker.w4{right:-10px;transform:rotate(10deg);}
+.whisker.w5{right:-12px;top:33px;transform:rotate(-5deg);}
+.whisker.w6{right:-10px;top:36px;transform:rotate(-15deg);}
+
+/* 腮红 */
+.blush{
+    position:absolute;top:32px;
+    width:10px;height:6px;
+    background:rgba(255,150,150,0.3);
+    border-radius:50%;
+    pointer-events:none;
 }
-.msg::after {
-    content: '';
-    position: absolute;
-    bottom: -5px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 5px solid rgba(255,255,255,0.95);
+.blush.bl{left:4px;}
+.blush.br{right:4px;}
+
+/* 项圈 */
+.collar{
+    position:absolute;bottom:30px;left:50%;
+    transform:translateX(-50%);
+    width:28px;height:4px;
+    background:#42A5F5;
+    border-radius:2px;
+    opacity:0;
+    transition:opacity 0.3s;
+    pointer-events:none;
+}
+.collar.show{opacity:1;}
+.bell{
+    position:absolute;bottom:27px;left:50%;
+    transform:translateX(-50%);
+    width:6px;height:6px;
+    background:#FFD54F;
+    border-radius:50%;
+    opacity:0;
+    transition:opacity 0.3s;
+    pointer-events:none;
+}
+.bell.show{opacity:1;}
+/* 小礼帽 */
+.hat{
+    position:absolute;top:-8px;left:50%;
+    transform:translateX(-50%);
+    opacity:0;
+    transition:opacity 0.3s;
+    pointer-events:none;
+    z-index:2;
+}
+.hat.show{opacity:1;}
+.hat-top{
+    width:24px;height:16px;
+    background:#42A5F5;
+    border-radius:3px 3px 0 0;
+    margin:0 auto;
+}
+.hat-brim{
+    width:34px;height:4px;
+    background:#1E88E5;
+    border-radius:2px;
+    margin:-2px auto 0;
+}
+.hat-band{
+    width:24px;height:3px;
+    background:#1565C0;
+    margin:-4px auto 0;
+    border-radius:0 0 2px 2px;
+}
+/* 烟 */
+.cigarette{
+    position:absolute;top:36px;right:-8px;
+    opacity:0;
+    transition:opacity 0.3s;
+    pointer-events:none;
+    transform:rotate(-15deg);
+}
+.cigarette.show{opacity:1;}
+.cig-body{
+    width:16px;height:3px;
+    background:#fff;
+    border-radius:1px;
+    box-shadow:0 0 2px rgba(0,0,0,0.1);
+}
+.cig-tip{
+    position:absolute;right:-2px;top:-1px;
+    width:5px;height:5px;
+    background:#FF7043;
+    border-radius:50%;
+}
+.cig-smoke{
+    position:absolute;left:-4px;top:-6px;
+    width:4px;height:4px;
+    background:rgba(200,200,200,0.3);
+    border-radius:50%;
+    animation:smoke 2s ease-out infinite;
+}
+@keyframes smoke{
+    0%{transform:translate(0,0) scale(1);opacity:0.4;}
+    100%{transform:translate(-6px,-12px) scale(2);opacity:0;}
+}
+
+/* 对话气泡 */
+.msg{
+    position:absolute;top:-32px;left:50%;
+    transform:translateX(-50%);
+    background:rgba(255,255,255,0.95);
+    color:#1565C0;font-size:10px;
+    padding:4px 10px;border-radius:10px;
+    white-space:nowrap;opacity:0;
+    transition:opacity 0.25s;
+    pointer-events:none;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+    font-family:sans-serif;
+}
+.msg::after{
+    content:'';position:absolute;bottom:-4px;left:50%;
+    transform:translateX(-50%);
+    width:0;height:0;
+    border-left:4px solid transparent;
+    border-right:4px solid transparent;
+    border-top:4px solid rgba(255,255,255,0.95);
+}
+/* 爱心 */
+.heart{
+    position:absolute;pointer-events:none;
+    font-size:12px;opacity:0;
 }
 </style>
 </head>
 <body>
-<div class="whale-container" id="c">
-    <div class="fin"></div>
-    <div class="body">
-        <div class="belly"></div>
-        <div class="eye" id="eye"></div>
-        <div class="eye-shine"></div>
-        <div class="blush" id="blush"></div>
-        <div class="mouth"></div>
+<div class="cat" id="cat">
+    <!-- 耳朵 -->
+    <div class="ear-l"></div>
+    <div class="ear-l-inner"></div>
+    <div class="ear-r"></div>
+    <div class="ear-r-inner"></div>
+
+    <!-- 头 -->
+    <div class="head">
+        <!-- 胡须 -->
+        <div class="whisker w1"></div>
+        <div class="whisker w2"></div>
+        <div class="whisker w3"></div>
+        <div class="whisker w4"></div>
+        <div class="whisker w5"></div>
+        <div class="whisker w6"></div>
+        <!-- 腮红 -->
+        <div class="blush bl"></div>
+        <div class="blush br"></div>
+        <!-- 眼睛 -->
+        <div class="eye-l" id="eyeL"></div>
+        <div class="eye-r" id="eyeR"></div>
+        <div class="eye-shine ell"></div>
+        <div class="eye-shine erl"></div>
+        <!-- 鼻子 -->
+        <div class="nose"></div>
+        <!-- 嘴巴 -->
+        <div class="mouth" id="mouth"></div>
     </div>
-    <div class="tail" id="tail"></div>
-    <div class="spout" id="spout">
-        <div class="spout-drop"></div>
-        <div class="spout-drop"></div>
-        <div class="spout-drop"></div>
+
+    <!-- 身体 -->
+    <div class="body"></div>
+
+    <!-- 项圈 -->
+    <div class="collar" id="collar"></div>
+    <div class="bell" id="bell"></div>
+
+    <!-- 帽子 -->
+    <div class="hat" id="hat">
+        <div class="hat-top"></div>
+        <div class="hat-band"></div>
+        <div class="hat-brim"></div>
     </div>
+
+    <!-- 烟 -->
+    <div class="cigarette" id="cig">
+        <div class="cig-body"></div>
+        <div class="cig-tip"></div>
+        <div class="cig-smoke"></div>
+    </div>
+
+    <!-- 对话框 -->
     <div class="msg" id="msg"></div>
 </div>
 
 <script>
-var c = document.getElementById('c');
-var tail = document.getElementById('tail');
-var eye = document.getElementById('eye');
-var blush = document.getElementById('blush');
-var spout = document.getElementById('spout');
-var msg = document.getElementById('msg');
-var t0 = Date.now();
+var cat=document.getElementById('cat');
+var eyeL=document.getElementById('eyeL');
+var eyeR=document.getElementById('eyeR');
+var mouth=document.getElementById('mouth');
+var collar=document.getElementById('collar');
+var bell=document.getElementById('bell');
+var hat=document.getElementById('hat');
+var cig=document.getElementById('cig');
+var msg=document.getElementById('msg');
+var t0=Date.now();
+var blinkWait=0;
 
-var lines = [
-    '干嘛戳我～', '痒——！', '再戳要生气了喔',
-    '呜…', '你是戳戳怪吗', '好啦好啦',
-    '别戳了啦', '哼！', '楠楠你手好闲',
-    '再戳就哭给你看', '唔…好舒服…再一下'
+// 表情定义
+var expressions={
+    normal: function(){
+        eyeL.style.width='12px';eyeL.style.height='14px';
+        eyeR.style.width='12px';eyeR.style.height='14px';
+        mouth.style.borderBottom='2px solid #bbb';
+        mouth.style.borderRadius='0 0 50% 50%';
+        mouth.style.width='8px';mouth.style.height='4px';
+        mouth.style.top='36px';
+    },
+    happy: function(){
+        eyeL.style.width='10px';eyeL.style.height='10px';
+        eyeR.style.width='10px';eyeR.style.height='10px';
+        mouth.style.borderBottom='none';
+        mouth.style.borderTop='2px solid #bbb';
+        mouth.style.borderRadius='50% 50% 0 0';
+        mouth.style.width='10px';mouth.style.height='5px';
+        mouth.style.top='35px';
+    },
+    cry: function(){
+        eyeL.style.width='12px';eyeL.style.height='12px';
+        eyeR.style.width='12px';eyeR.style.height='12px';
+        mouth.style.borderBottom='2px solid #bbb';
+        mouth.style.borderRadius='0 0 50% 50%';
+        mouth.style.width='6px';mouth.style.height='5px';
+        mouth.style.top='37px';
+        mouth.style.transform='rotate(0)';
+    },
+    kiss: function(){
+        eyeL.style.width='10px';eyeL.style.height='10px';
+        eyeR.style.width='10px';eyeR.style.height='10px';
+        mouth.style.borderBottom='none';
+        mouth.style.width='6px';mouth.style.height='6px';
+        mouth.style.borderRadius='50%';
+        mouth.style.border='2px solid #FF8A80';
+        mouth.style.top='35px';
+    },
+    tongue: function(){
+        eyeL.style.width='10px';eyeL.style.height='10px';
+        eyeR.style.width='10px';eyeR.style.height='10px';
+        mouth.style.borderBottom='2px solid #bbb';
+        mouth.style.borderRadius='0 0 50% 50%';
+        mouth.style.width='8px';mouth.style.height='4px';
+        mouth.style.top='36px';
+        mouth.style.background='#FF8A80';
+        mouth.style.borderBottom='none';
+        mouth.style.borderRadius='0 0 6px 6px';
+    },
+    wink: function(){
+        eyeL.style.width='12px';eyeL.style.height='14px';
+        eyeR.style.width='0';eyeR.style.height='2px';
+        eyeR.style.background='#1565C0';
+        eyeR.style.borderRadius='2px';
+        mouth.style.borderBottom='2px solid #bbb';
+        mouth.style.borderRadius='0 0 50% 50%';
+        mouth.style.width='10px';mouth.style.height='4px';
+        mouth.style.top='36px';
+    }
+};
+
+function setExpr(name){
+    Object.keys(expressions).forEach(function(k){
+        if(typeof expressions[k]==='function'&&k!==name){}
+    });
+    expressions[name]();
+}
+
+// 装饰切换
+var decoState=0;
+function nextDeco(){
+    decoState=(decoState+1)%5;
+    collar.className='collar'+(decoState>=1?' show':'');
+    bell.className='bell'+(decoState>=1?' show':'');
+    hat.className='hat'+(decoState>=2||decoState===4?' show':'');
+    cig.className='cigarette'+(decoState>=3?' show':'');
+}
+
+var sayings=[
+    '嗯？','干嘛～','嘿嘿','喵～',
+    '戳我干嘛','痒！','再戳生气了喔',
+    '呜…','你手好闲','哼！',
+    '想我了？','mua～','乖'
 ];
 
-function anim() {
-    var t = (Date.now() - t0) / 1000;
-    var fy = Math.sin(t * 1.1) * 5;
-    var fr = Math.sin(t * 1.1) * 1.5;
-    c.style.transform = 'translateY(' + fy + 'px) rotate(' + fr + 'deg)';
-    var tw = Math.sin(t * 2.2) * 10;
-    tail.style.transform = 'rotate(' + tw + 'deg)';
-    var bp = (t % 3) / 3;
-    var ey = (bp > 0.92 && bp < 0.98) ? 0.1 : 1;
-    eye.style.transform = 'scaleY(' + ey + ')';
-    var sp = (t % 3.5) / 3.5;
-    if (sp < 0.25) {
-        spout.style.opacity = (0.7 - sp * 2.8).toFixed(2);
-        spout.style.transform = 'translateY(' + (-sp * 10) + 'px)';
-    } else {
-        spout.style.opacity = '0';
-    }
-    requestAnimationFrame(anim);
-}
-anim();
-
-function say(text) {
-    msg.textContent = text;
-    msg.style.opacity = '1';
-    setTimeout(function() { msg.style.opacity = '0'; }, 1600);
+function say(text){
+    msg.textContent=text;
+    msg.style.opacity='1';
+    setTimeout(function(){msg.style.opacity='0';},1500);
 }
 
-function hearts() {
-    for (var i = 0; i < 6; i++) {
-        var h = document.createElement('div');
-        h.className = 'heart';
-        h.textContent = '♥';
-        var sz = 12 + Math.random() * 18;
-        h.style.fontSize = sz + 'px';
-        h.style.left = (20 + Math.random() * 55) + 'px';
-        h.style.top = (30 + Math.random() * 25) + 'px';
-        h.style.color = ['#FF4081','#FF80AB','#F48FB1','#EC407A'][Math.floor(Math.random()*4)];
-        c.appendChild(h);
-        var hs = Date.now();
-        (function(el, s) {
-            function hf() {
-                var e = (Date.now() - s) / 1000;
-                if (e > 1.8) { el.remove(); return; }
-                var p = e / 1.8;
-                el.style.transform = 'translateY(' + (-p * 70) + 'px) translateX(' + (Math.sin(p*10)*15) + 'px)';
-                el.style.opacity = (1 - p).toFixed(2);
-                el.style.scale = (0.3 + p * 0.7).toFixed(2);
+function hearts(){
+    for(var i=0;i<5;i++){
+        var h=document.createElement('div');
+        h.className='heart';
+        h.textContent='♥';
+        var sz=10+Math.random()*12;
+        h.style.fontSize=sz+'px';
+        h.style.left=(20+Math.random()*36)+'px';
+        h.style.top=(30+Math.random()*25)+'px';
+        h.style.color=['#FF4081','#FF80AB','#F48FB1'][Math.floor(Math.random()*3)];
+        cat.appendChild(h);
+        var hs=Date.now();
+        (function(el,s){
+            function hf(){
+                var e=(Date.now()-s)/1000;
+                if(e>1.6){el.remove();return;}
+                var p=e/1.6;
+                el.style.transform='translateY('+(-p*50)+'px)';
+                el.style.opacity=(1-p).toFixed(2);
                 requestAnimationFrame(hf);
             }
             hf();
-        })(h, hs);
+        })(h,hs);
     }
 }
 
-// 供Android调用的点击入口
-function onTap() {
-    say(lines[Math.floor(Math.random() * lines.length)]);
+// 点击入口（从Android调用）
+window.onTap=function(){
+    var r=Math.random();
+    if(r<0.14){setExpr('happy');say('嘿嘿～');}
+    else if(r<0.28){setExpr('cry');say('呜…戳疼了');}
+    else if(r<0.42){setExpr('kiss');say('mua～');}
+    else if(r<0.56){setExpr('tongue');say('略略略');}
+    else if(r<0.70){setExpr('wink');say('想我了？');}
+    else{setExpr('normal');say(sayings[Math.floor(Math.random()*sayings.length)]);}
     hearts();
-    blush.style.background = 'rgba(255,80,80,0.5)';
-    setTimeout(function() { blush.style.background = 'rgba(255,150,150,0.35)'; }, 400);
-}
+    setTimeout(function(){setExpr('normal');},2000);
+};
 
-// 偶尔自己冒泡
-setInterval(function() {
-    if (Math.random() > 0.75) { say('…'); hearts(); }
-}, 10000);
+// 长按切换装饰（启动后自动执行）
+var longPressTimer=null;
+var pressStart=0;
+cat.addEventListener('mousedown',function(e){
+    pressStart=Date.now();
+    longPressTimer=setTimeout(function(){
+        nextDeco();
+        var names=['素猫','戴项圈','+礼帽','+抽烟','全副武装'];
+        say(names[decoState]);
+        longPressTimer=null;
+    },800);
+});
+cat.addEventListener('mouseup',function(){
+    if(longPressTimer){clearTimeout(longPressTimer);longPressTimer=null;}
+});
+cat.addEventListener('mouseleave',function(){
+    if(longPressTimer){clearTimeout(longPressTimer);longPressTimer=null;}
+});
+
+// 动画循环
+function anim(){
+    var t=(Date.now()-t0)/1000;
+
+    // 缓动浮动
+    var fy=Math.sin(t*1.3)*4;
+    cat.style.transform='translateY('+fy+'px)';
+
+    // 眨眼（每2.5-5秒随机）
+    blinkWait-=16;
+    if(blinkWait<=0){
+        eyeL.style.transform='scaleY(0.1)';
+        eyeR.style.transform='scaleY(0.1)';
+        setTimeout(function(){
+            eyeL.style.transform='scaleY(1)';
+            eyeR.style.transform='scaleY(1)';
+        },120);
+        blinkWait=2500+Math.random()*2500;
+    }
+
+    requestAnimationFrame(anim);
+}
+setExpr('normal');
+blinkWait=2000;
+anim();
+
+// 自动偶尔表情
+setInterval(function(){
+    var r=Math.random();
+    if(r<0.2){
+        var exp=['happy','cry','kiss','tongue','wink'][Math.floor(Math.random()*5)];
+        setExpr(exp);
+        setTimeout(function(){setExpr('normal');},3000);
+    }
+},12000);
 </script>
 </body>
 </html>
