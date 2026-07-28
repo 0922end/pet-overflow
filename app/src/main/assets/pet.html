@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<style>
+  * {margin:0;padding:0;box-sizing:border-box;}
+  body{background:transparent;overflow:hidden;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:'Segoe UI',sans-serif;}
+  #pet-container{position:relative;width:100px;height:100px;display:flex;align-items:center;justify-content:center;}
+  #pet-svg{width:80px;height:80px;transition:transform 0.3s ease;}
+  #pet-svg:active{transform:scale(0.9);}
+  #bubble{position:absolute;top:-40px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,0.95);color:#333;padding:6px 12px;border-radius:12px;font-size:12px;white-space:nowrap;max-width:160px;text-overflow:ellipsis;opacity:0;transition:opacity 0.3s,transform 0.3s;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,0.15);}
+  #bubble.show{opacity:1;}
+  #bubble.pink{background:#ffe0ec;color:#c44569;}
+  #bubble.whisper{background:#e8e8e8;color:#666;}
+  #bubble.roar{background:#ff6b6b;color:white;}
+  #bubble.jealous{background:#b8e994;color:#218c53;}
+  @keyframes bounce{0%,100%{transform:translateY(0);}50%%í™9™½ÉºtranslateY(-8px);}}
+  @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}75%{transform:translateX(4px);}}
+  .animate-bounce{animation:bounce 0.6s ease;}
+  .animate-shake{animation:shake 0.3s ease;}
+</style>
+</head>
+<body>
+<div id="pet-container">
+  <div id="bubble"></div>
+  <svg id="pet-svg" viewBox="0 0 100 100">
+    <ellipse cx="50" cy="58" rx="32" ry="30" fill="#f5a623"/>
+    <polygon points="22,32 30,18 38,32" fill="#f5a623"/>
+    <polygon points="62,32 70,18 78,32" fill="#f5a623"/>
+    <polygon points="26,32 30,24 36,32" fill="#ffced1"/>
+    <polygon points="64,32 70,24 76,32" fill="#ffced1"/>
+    <ellipse id="left-eye" cx="38" cy="50" rx="5" ry="6" fill="#333"/>
+    <ellipse id="right-eye" cx="62" cy="50" rx="5" ry="6" fill="#333"/>
+    <circle cx="40" cy="47" r="2" fill="white"/>
+    <circle cx="64" cy="47" r="2" fill="white"/>
+    <ellipse cx="50" cy="56" rx="3" ry="2" fill="#e88"/>
+    <path id="mouth" d="M44,62 Q50,68 56,62" stroke="#333" stroke-width="2" fill="none"/>
+    <line x1="20" y1="52" x2="34" y2="54" stroke="#999" stroke-width="1"/>
+    <line x1="20" y1="58" x2="34" y2="56" stroke="#999" stroke-width="1"/>
+    <line x1="80" y1="52" x2="66" y2="54" stroke="#999" stroke-width="1"/>
+    <line x1="80" y1="58" x2="66" y2="56" stroke="#999" stroke-width="1"/>
+    <ellipse id="blush-left" cx="28" cy="56" rx="6" ry="4" fill="#ff8a8a" opacity="0"/>
+    <ellipse id="blush-right" cx="72" cy="56" rx="6" ry="4" fill="#ff8a8a" opacity="0"/>
+  </svg>
+  <div id="heat-overlay"></div>
+</div>
+<script>
+  const bubble = document.getElementById('bubble')
+  const mouth = document.getElementById('mouth')
+  const blush = [document.getElementById('blush-left'), document.getElementById('blush-right')]
+  
+  function setExpression(expr) {
+    document.getElementById('left-eye').fill = '#333'
+    document.getElementById('right-eye').fill = '#333'
+    document.getElementById('pet-svg').classList.remove('animate-bounce', 'animate-shake')
+    
+    switch(expr) {
+      case 'idle': mouth.setAttribute('d', 'M44,62 Q50,68 56,62'); break
+      case 'happy': mouth.setAttribute('d', 'M42,60 Q50,70 58,60'); break
+      case 'sad': mouth.setAttribute('d', 'M44,66 Q50,60 56,66'); break
+      case 'angry': mouth.setAttribute('d', 'M44,62 Q50,62 56,62'); break
+      case 'blush': mouth.setAttribute('d', 'M44,62 Q50,66 56,62'); break
+      case 'sleep': mouth.setAttribute('d', 'M44,64 Q50,64 56,64'); break
+      case 'love': mouth.setAttribute('d', 'M42,60 Q50,70 58,60'); break
+      case 'surprise': mouth.setAttribute('d', 'M46,60 Q50,68 54,60'); break
+    }
+  }
+  
+  function showBubble(text, style) {
+    bubble.textContent = text
+    bubble.className = 'show' + (style && style !== 'normal' ? ' ' + style : '')
+    setTimeout(() => bubble.className = '', 4000)
+  }
+</script>
+</body>
+</html>
