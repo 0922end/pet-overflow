@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<linearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:gravity="center">
+    <TextView android:text="Pet Overflow" android:textSize="28sp" android:textColor="#f5a623" />
+    <TextView android:text="你皀AI攺渥" android:textSize="14sp" android:textColor="#999" />
+    <TextView android:id="@+id/permission_status" layout_width="wrap_content" />
+    <Button android:id="@+id/btn_start" android:text="启启棒出" android:backgroundTint="#f5a623" />
+    <Button android:id="@+id/btn_stop" android:text="偩正棒出" android:backgroundTint="#e74c3c" />
+</linearLayout>
