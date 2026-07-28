@@ -14,7 +14,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.webkit.WebView
-import android.webkit.WebViewClient
 
 class OverlayService : Service() {
 
@@ -60,7 +59,7 @@ class OverlayService : Service() {
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(CHANNEL_ID, "大鲸鱼桌宠", NotificationManager.IMPORTANCE_LOW).apply {
-                description = "大鲸鱼正在桌面上游泳～"
+                description = "小易猫猫在桌面上～"
             }
             (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager).createNotificationChannel(channel)
         }
@@ -69,8 +68,8 @@ class OverlayService : Service() {
     private fun buildNotification(): Notification {
         val b = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) Notification.Builder(this, CHANNEL_ID)
         else Notification.Builder(this)
-        return b.setContentTitle("大鲸鱼桌宠")
-            .setContentText("正在桌面上游泳～")
+        return b.setContentTitle("小易猫猫桌宠")
+            .setContentText("在桌面上等你～")
             .setSmallIcon(android.R.drawable.ic_menu_compass)
             .setOngoing(true)
             .build()
@@ -84,13 +83,9 @@ class OverlayService : Service() {
         webView?.settings?.apply {
             javaScriptEnabled = true
             setSupportZoom(false)
+            allowFileAccess = true
+            allowContentAccess = true
         }
-        webView?.setBackgroundColor(0x00000000)
-        webView?.setWebViewClient(WebViewClient())
-        webView?.loadUrl("file:///android_asset/pet.html")
-        webView?.isClickable = false
-        webView?.isFocusable = false
-        webView?.isLongClickable = false
 
         val density = resources.displayMetrics.density
         val petSize = (120 * density).toInt()
@@ -108,6 +103,17 @@ class OverlayService : Service() {
             x = 0
             y = 200
         }
+
+        val html = """
+<!DOCTYPE html>
+<html><body style="margin:0;padding:0;background:transparent;display:flex;align-items:center;justify-content:center;width:100%;height:100%">
+<div style="width:60px;height:60px;border-radius:50%;background:#FFB74D;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 2px 10px rgba(0,0,0,0.2)">😺</div>
+<script>console.log('inline html loaded')</script>
+</body></html>
+        """.trimIndent()
+
+        webView?.setBackgroundColor(0x00000000)
+        webView?.loadDataWithBaseURL(null, html, "text/html", "UTF-8", null)
 
         val touchListener = View.OnTouchListener { _, event ->
             when (event.action) {
@@ -130,7 +136,7 @@ class OverlayService : Service() {
                 }
                 MotionEvent.ACTION_UP -> {
                     if (!isDragging) {
-                        webView?.loadUrl("javascript:if(window.onTap)onTap()")
+                        webView?.loadUrl("javascript:(function(){var m=document.getElementById('m');if(m){m.style.opacity='1';setTimeout(function(){m.style.opacity='0'},1000)}})()")
                     }
                     isDragging = false
                     true
