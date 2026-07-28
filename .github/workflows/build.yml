@@ -22,9 +22,19 @@ jobs:
           gradle-version: "8.2"
       - name: Build with Gradle
         run: gradle assembleDebug --stacktrace 2>&1 | tee build.log
+      - name: Debug - list output dirs
+        run: |
+          echo "=== Looking for APKs ==="
+          find . -name "*.apk" -type f 2>/dev/null
+          echo "=== Check build output ==="
+          ls -la app/build/outputs/ 2>/dev/null || echo "no outputs dir"
+          ls -la app/build/outputs/apk/ 2>/dev/null || echo "no apk dir"
+          ls -la app/build/outputs/apk/debug/ 2>/dev/null || echo "no debug dir"
+          echo "=== Check entire workspace ==="
+          find /home/runner -name "*.apk" -type f 2>/dev/null
       - name: Find APK
         run: |
-          find . -path "*/build/outputs/apk/*.apk" -type f 2>/dev/null > apk-list.txt
+          find . -name "*.apk" -type f 2>/dev/null > apk-list.txt
           cat apk-list.txt
           if [ -s apk-list.txt ]; then
             cp $(head -1 apk-list.txt) pet-overflow.apk
