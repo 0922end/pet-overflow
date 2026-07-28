@@ -34,6 +34,7 @@ class OverlayService : Service() {
     private var iy = 0
     private var itx = 0f
     private var ity = 0f
+    private var dragging = false
 
     override fun onCreate() {
         super.onCreate()
@@ -97,16 +98,30 @@ class OverlayService : Service() {
             y = 200
         }
 
-        container.setOnTouchListener { _, event ->
+        // 触摸监听绑在WebView上，防止被子View拦掉
+        wv?.setOnTouchListener { _, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    ix = p.x; iy = p.y; itx = event.rawX; ity = event.rawY
+                    dragging = false
+                    ix = p.x; iy = p.y
+                    itx = event.rawX; ity = event.rawY
                     true
                 }
                 MotionEvent.ACTION_MOVE -> {
-                    p.x = ix + (event.rawX - itx).toInt()
-                    p.y = iy + (event.rawY - ity).toInt()
+                    val dx = event.rawX - itx
+                    val dy = event.rawY - ity
+                    if (Math.sqrt((dx * dx + dy * dy).toDouble()) > 10) dragging = true
+                    p.x = ix + dx.toInt()
+                    p.y = iy + dy.toInt()
                     wm.updateViewLayout(container, p)
+                    true
+                }
+                MotionEvent.ACTION_UP -> {
+                    if (!dragging) {
+                        // 点击事件 -> 触发猫猫的点击处理
+                        wv?.evaluateJavascript("javascript:(function(){if(window.C&&C.onclick)C.onclick()})()", null)
+                    }
+                    dragging = false
                     true
                 }
                 else -> true
