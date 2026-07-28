@@ -39,23 +39,16 @@ body{background:transparent;overflow:visible;width:100%;height:100%;display:flex
 .eye-box{position:absolute;z-index:2;width:16px;height:16px;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .ebl{top:13px;left:10px}
 .ebr{top:13px;right:10px}
-/* 正常圆形眼 */
 .e-normal{width:11px;height:13px;background:radial-gradient(circle at 35% 30%,#64B5F6,#0D47A1);border-radius:50%;position:relative;flex-shrink:0}
 .e-normal::after{content:'';position:absolute;top:2px;left:3px;width:3px;height:3px;background:#fff;border-radius:50%}
-/* 弧线眼(开心) */
 .e-arc{width:12px;height:6px;border-bottom:2.5px solid #1565C0;border-radius:0 0 50% 50%;flex-shrink:0}
-/* 闭眼线 */
 .e-line{width:12px;height:2.5px;background:#1565C0;border-radius:2px;flex-shrink:0}
-/* 生气斜线 */
 .e-angry{width:12px;height:2.5px;background:#1565C0;flex-shrink:0;transform:rotate(-15deg)}
-/* 委屈下垂 */
 .e-sad{width:12px;height:8px;border-top:2.5px solid #1565C0;border-radius:50% 50% 0 0;flex-shrink:0}
-/* XX眼(亲亲) */
 .e-xx{position:relative;width:14px;height:14px;flex-shrink:0}
 .e-xx::before,.e-xx::after{content:'';position:absolute;width:12px;height:2.5px;background:#1565C0;top:6px;left:1px;border-radius:1px}
 .e-xx::before{transform:rotate(45deg)}
 .e-xx::after{transform:rotate(-45deg)}
-
 .ns{position:absolute;top:24px;left:50%;transform:translateX(-50%);width:4px;height:3px;background:#F48FB1;border-radius:50%;z-index:2}
 .mo{position:absolute;left:50%;transform:translateX(-50%);z-index:2}
 .mo-nm{top:29px;width:7px;height:3px;border-bottom:2px solid #F48FB1;border-radius:0 0 50% 50%}
@@ -107,30 +100,18 @@ var ELD=document.getElementById('ELD'),ERD=document.getElementById('ERD')
 var MO=document.getElementById('MO'),CL=document.getElementById('CL'),BL=document.getElementById('BL')
 var HT=document.getElementById('HT'),CG=document.getElementById('CG')
 var MS=document.getElementById('MS'),C=document.getElementById('C'),t0=Date.now(),bc=0,curE=0
+var lastTap=0,tapCnt=0,loneTimer=null,loneLevel=0,lastInteract=Date.now()
 
 var eyeHTML=[
-  '<div class="e-normal"></div>',   // 0 正常
-  '<div class="e-arc"></div>',      // 1 开心
-  '<div class="e-sad"></div>',      // 2 委屈
-  '<div class="e-xx"></div>',       // 3 亲亲
-  '<div class="e-normal"></div>',   // 4 吐舌
-  '',                               // 5 wink（特殊处理）
-  '<div class="e-angry"></div>',    // 6 生气
-  '<div class="e-sad"></div>',      // 7 伤心
-  '<div class="e-line"></div>'      // 8 闭眼
+  '<div class="e-normal"></div>','<div class="e-arc"></div>','<div class="e-sad"></div>',
+  '<div class="e-xx"></div>','<div class="e-normal"></div>','',
+  '<div class="e-angry"></div>','<div class="e-sad"></div>','<div class="e-line"></div>'
 ]
-
 function setEyes(n){
   curE=n
-  if(n===5){
-    ELD.innerHTML='<div class="e-normal"></div>'
-    ERD.innerHTML='<div class="e-line"></div>'
-  } else {
-    ELD.innerHTML=eyeHTML[n]||''
-    ERD.innerHTML=eyeHTML[n]||''
-  }
+  if(n===5){ELD.innerHTML='<div class="e-normal"></div>';ERD.innerHTML='<div class="e-line"></div>'}
+  else {ELD.innerHTML=eyeHTML[n]||'';ERD.innerHTML=eyeHTML[n]||''}
 }
-
 function ex(n){
   var mc=['mo-nm','mo-hp','mo-cr','mo-ks','mo-tg','mo-nm','mo-ag','mo-sd']
   setEyes(n);MO.className='mo '+mc[n]
@@ -142,27 +123,90 @@ function td(){dc=(dc+1)%5;CL.className='col'+(dc>=1?' on':'');BL.className='bel'
 var msgs=[['嘿嘿～','mua～','乖～'],['嘻嘻！','开心！'],['呜…','委屈'],['mua～','亲亲'],['略略略','吐舌'],['wink～','❤️'],['哼！','生气了！'],['伤心…','呜呜']]
 function sy(t){MS.textContent=t;MS.style.opacity='1';setTimeout(function(){MS.style.opacity='0'},1400)}
 function ht(){for(var i=0;i<4;i++){var h=document.createElement('div');h.className='ht-heart';h.textContent='♥';var s=8+Math.random()*8;h.style.fontSize=s+'px';h.style.left=(15+Math.random()*30)+'px';h.style.top=(18+Math.random()*20)+'px';h.style.color=['#FF4081','#FF80AB','#F48FB1'][Math.floor(Math.random()*3)];C.appendChild(h);var hs=Date.now();!function(e,s){function hf(){var a=(Date.now()-s)/1000;if(a>1.4){e.remove();return}var p=a/1.4;e.style.transform='translateY('+(-p*40)+'px)';e.style.opacity=(1-p).toFixed(2);requestAnimationFrame(hf)}hf()}(h,hs)}}
-function tap(){var e=Math.floor(Math.random()*8);ex(e);var m=msgs[e],msg=m[Math.floor(Math.random()*m.length)];sy(msg);ht();setTimeout(function(){ex(0)},2500)}
-function longpress(){td();var d=['素猫','项圈','+礼帽','+抽烟','全武装'];sy(d[dc])}
 
-// 眨眼：替换为闭眼线，100ms后恢复
+function interacted(){lastInteract=Date.now();loneLevel=0}
+
+// 连戳检测
+function tap(){
+  var now=Date.now()
+  if(now-lastTap<500){tapCnt++}else{tapCnt=1}
+  lastTap=now
+  interacted()
+  if(tapCnt>=4){
+    ex(6);sy('别戳了！');ht()
+    setTimeout(function(){ex(0)},2000)
+    return
+  }
+  var e=Math.floor(Math.random()*8);ex(e)
+  var m=msgs[e],msg=m[Math.floor(Math.random()*m.length)]
+  sy(msg);ht()
+  setTimeout(function(){ex(0)},2500)
+}
+
+function longpress(){td();interacted();var d=['素猫','项圈','+礼帽','+抽烟','全武装'];sy(d[dc])}
+
+// 时段感知
+function getPeriod(){
+  var h=new Date().getHours()
+  if(h<6)return 'dawn'     // 凌晨
+  if(h<9)return 'morning'  // 早上
+  if(h<12)return 'am'      // 上午
+  if(h<14)return 'noon'    // 中午
+  if(h<18)return 'pm'      // 下午
+  if(h<21)return 'eve'     // 傍晚
+  return 'night'            // 晚上
+}
+
+// 孤独检测
+function checkLone(){
+  var elapsed=(Date.now()-lastInteract)/60000
+  if(elapsed<4)return 0
+  if(elapsed<10)return 1
+  if(elapsed<20)return 2
+  if(elapsed<40)return 3
+  return 4
+}
+
+var loneSay=['','…嗯？','…有人吗','…好安静','zzz…']
 function blink(){
-  ELD.innerHTML='<div class="e-line"></div>'
-  ERD.innerHTML='<div class="e-line"></div>'
+  ELD.innerHTML='<div class="e-line"></div>';ERD.innerHTML='<div class="e-line"></div>'
   setTimeout(function(){
-    if(curE===5){
-      ELD.innerHTML='<div class="e-normal"></div>'
-      ERD.innerHTML='<div class="e-line"></div>'
-    } else {
-      ELD.innerHTML=eyeHTML[curE]||''
-      ERD.innerHTML=eyeHTML[curE]||''
-    }
+    if(curE===5){ELD.innerHTML='<div class="e-normal"></div>';ERD.innerHTML='<div class="e-line"></div>'}
+    else {ELD.innerHTML=eyeHTML[curE]||'';ERD.innerHTML=eyeHTML[curE]||''}
   },100)
 }
 
-!function anim(){var t=(Date.now()-t0)/1000;C.style.transform='translateY('+Math.sin(t*1.3)*3+'px)';bc-=16;if(bc<=0){blink();bc=2500+Math.random()*2500}requestAnimationFrame(anim)}()
+!function anim(){
+  var t=(Date.now()-t0)/1000
+  // 浮动速度随孤独程度变慢
+  var speed=1.3-loneLevel*0.15
+  C.style.transform='translateY('+Math.sin(t*speed)*3+'px)'
+  // 时段变化
+  var p=getPeriod()
+  if(p==='night'||p==='dawn'){
+    // 晚上半闭眼
+    if(curE===0){setEyes(8);curE=0}
+  } else if(p==='noon'&&curE===0){
+    // 中午犯困
+    if(Math.random()<0.005){ex(7);setTimeout(function(){ex(0)},4000)}
+  } else if(p==='morning'&&Math.random()<0.003){
+    sy('早安～')
+  }
+  // 孤独检测
+  var lv=checkLone()
+  if(lv!==loneLevel&&lv>0){
+    loneLevel=lv
+    if(lv===1){ex(1);sy(loneSay[lv]);setTimeout(function(){ex(0)},2000)}
+    else if(lv===2){ex(2);sy(loneSay[lv]);setTimeout(function(){ex(0)},2500)}
+    else if(lv===3){ex(7);sy(loneSay[lv]);setTimeout(function(){ex(0)},3000)}
+    else if(lv===4){setEyes(8);sy(loneSay[lv])}
+  }
+  // 眨眼
+  bc-=16;if(bc<=0){blink();bc=2500+Math.random()*2500}
+  requestAnimationFrame(anim)
+}()
 bc=2000;
-setInterval(function(){if(Math.random()<0.25){var e=Math.floor(Math.random()*8);ex(e);setTimeout(function(){ex(0)},3000)}},10000);
+setInterval(function(){if(Math.random()<0.2&&loneLevel<2){var e=Math.floor(Math.random()*8);ex(e);setTimeout(function(){ex(0)},3000)}},12000);
 </script></body></html>
         """.trimIndent()
     }
