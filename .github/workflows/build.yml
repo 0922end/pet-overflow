@@ -18,23 +18,24 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.5"
-      - name: Build with Gradle
+      - name: Generate Gradle Wrapper
+        run: gradle wrapper --gradle-version 8.5
+      - name: Build with Gradle Wrapper
+        run: ./gradlew assembleDebug --stacktrace 2>&1 | tee build.log
+      - name: Find and upload APK
         run: |
-          gradle assembleDebug --stacktrace 2>&1 | tee build.log
-      - name: Find APK everywhere
-        run: |
-          find / -type f -name "*.apk" 2>/dev/null > apk-locations.txt
-          cat apk-locations.txt
-          head -1 apk-locations.txt | xargs -I{} cp {} pet-overflow.apk 2>/dev/null || echo "no apk found"
+          find /github -name "*.apk" -type f 2>/dev/null | head -20
+          find /home -name "*.apk" -type f 2>/dev/null | head -20
+          find /root -name "*.apk" -type f 2>/dev/null | head -20
+          ls -laR /github/workspace/app/build/ 2>/dev/null | head -50
       - name: Upload APK
-        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: pet-overflow-apk
-          path: pet-overflow.apk
-      - name: Upload search log
+          path: "**/*.apk"
+      - name: Upload build log
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: apk-locations
-          path: apk-locations.txt
+          name: build-log
+          path: build.log
