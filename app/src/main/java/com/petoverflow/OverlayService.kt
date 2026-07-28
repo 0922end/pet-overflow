@@ -34,21 +34,27 @@ class OverlayService : Service() {
 <style>
 *{margin:0;padding:0;box-sizing:border-box;user-select:none;-webkit-user-select:none}
 body{background:transparent;overflow:visible;width:100%;height:100%;display:flex;align-items:center;justify-content:center}
-.c{position:relative;width:64px;height:60px;cursor:pointer}
+.c{position:relative;width:64px;height:62px;cursor:pointer}
 .hd{position:absolute;top:2px;left:4px;width:56px;height:46px;background:linear-gradient(180deg,#fff8f0,#fde8d6);border-radius:50% 50% 45% 45%;z-index:1;box-shadow:0 2px 8px rgba(0,0,0,.04)}
-.el{position:absolute;top:14px;left:12px;z-index:2;width:14px;height:16px;display:flex;align-items:center;justify-content:center}
-.er{position:absolute;top:14px;right:12px;z-index:2;width:14px;height:16px;display:flex;align-items:center;justify-content:center}
-.ey{width:11px;height:13px;background:radial-gradient(circle at 35% 30%,#64B5F6,#0D47A1);border-radius:50%;position:absolute}
-.es{position:absolute;top:2px;left:3px;width:3px;height:3px;background:#fff;border-radius:50%}
-.ey-arc{width:12px;height:6px;border-bottom:2.5px solid #1565C0;border-radius:0 0 50% 50%;position:absolute;top:3px}
-.ey-line{width:11px;height:2.5px;background:#1565C0;border-radius:2px;position:absolute;top:7px}
-.ey-angry{width:11px;height:2.5px;background:#1565C0;position:absolute;top:6px;transform:rotate(-15deg)}
-.ey-sad{width:12px;height:8px;border-top:2.5px solid #1565C0;border-radius:50% 50% 0 0;position:absolute;top:5px}
-/* XX眼（亲亲） */
-.ey-xx{position:absolute;width:14px;height:14px;top:1px;left:-1px}
-.ey-xx::before,.ey-xx::after{content:'';position:absolute;width:12px;height:2.5px;background:#1565C0;top:6px;left:1px;border-radius:1px}
-.ey-xx::before{transform:rotate(45deg)}
-.ey-xx::after{transform:rotate(-45deg)}
+.eye-box{position:absolute;z-index:2;width:16px;height:16px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.ebl{top:13px;left:10px}
+.ebr{top:13px;right:10px}
+/* 正常圆形眼 */
+.e-normal{width:11px;height:13px;background:radial-gradient(circle at 35% 30%,#64B5F6,#0D47A1);border-radius:50%;position:relative;flex-shrink:0}
+.e-normal::after{content:'';position:absolute;top:2px;left:3px;width:3px;height:3px;background:#fff;border-radius:50%}
+/* 弧线眼(开心) */
+.e-arc{width:12px;height:6px;border-bottom:2.5px solid #1565C0;border-radius:0 0 50% 50%;flex-shrink:0}
+/* 闭眼线 */
+.e-line{width:12px;height:2.5px;background:#1565C0;border-radius:2px;flex-shrink:0}
+/* 生气斜线 */
+.e-angry{width:12px;height:2.5px;background:#1565C0;flex-shrink:0;transform:rotate(-15deg)}
+/* 委屈下垂 */
+.e-sad{width:12px;height:8px;border-top:2.5px solid #1565C0;border-radius:50% 50% 0 0;flex-shrink:0}
+/* XX眼(亲亲) */
+.e-xx{position:relative;width:14px;height:14px;flex-shrink:0}
+.e-xx::before,.e-xx::after{content:'';position:absolute;width:12px;height:2.5px;background:#1565C0;top:6px;left:1px;border-radius:1px}
+.e-xx::before{transform:rotate(45deg)}
+.e-xx::after{transform:rotate(-45deg)}
 
 .ns{position:absolute;top:24px;left:50%;transform:translateX(-50%);width:4px;height:3px;background:#F48FB1;border-radius:50%;z-index:2}
 .mo{position:absolute;left:50%;transform:translateX(-50%);z-index:2}
@@ -86,8 +92,8 @@ body{background:transparent;overflow:visible;width:100%;height:100%;display:flex
 <div class="er-l"></div><div class="er-r"></div>
 <div class="hd">
 <div class="bl bll"></div><div class="bl blr"></div>
-<div class="el" id="ELD"><div class="ey" id="EL"><div class="es"></div></div></div>
-<div class="er" id="ERD"><div class="ey" id="ER"><div class="es"></div></div></div>
+<div class="eye-box ebl" id="ELD"></div>
+<div class="eye-box ebr" id="ERD"></div>
 <div class="ns"></div>
 <div class="mo mo-nm" id="MO"></div>
 </div>
@@ -97,20 +103,34 @@ body{background:transparent;overflow:visible;width:100%;height:100%;display:flex
 <div class="ms" id="MS"></div>
 </div>
 <script>
-var EL=document.getElementById('EL'),ER=document.getElementById('ER')
+var ELD=document.getElementById('ELD'),ERD=document.getElementById('ERD')
 var MO=document.getElementById('MO'),CL=document.getElementById('CL'),BL=document.getElementById('BL')
 var HT=document.getElementById('HT'),CG=document.getElementById('CG')
-var MS=document.getElementById('MS'),C=document.getElementById('C'),t0=Date.now(),bc=0
+var MS=document.getElementById('MS'),C=document.getElementById('C'),t0=Date.now(),bc=0,curE=0
 
-function setEyes(t){
-  EL.innerHTML='';ER.innerHTML=''
-  if(t===0||t===4){EL.innerHTML='<div class="ey"><div class="es"></div></div>';ER.innerHTML='<div class="ey"><div class="es"></div></div>'}
-  else if(t===1){EL.innerHTML='<div class="ey-arc"></div>';ER.innerHTML='<div class="ey-arc"></div>'}
-  else if(t===2||t===7){EL.innerHTML='<div class="ey-sad"></div>';ER.innerHTML='<div class="ey-sad"></div>'}
-  else if(t===3){EL.innerHTML='<div class="ey-xx"></div>';ER.innerHTML='<div class="ey-xx"></div>'}
-  else if(t===5){EL.innerHTML='<div class="ey"><div class="es"></div></div>';ER.innerHTML='<div class="ey-line"></div>'}
-  else if(t===6){EL.innerHTML='<div class="ey-angry"></div>';ER.innerHTML='<div class="ey-angry"></div>'}
+var eyeHTML=[
+  '<div class="e-normal"></div>',   // 0 正常
+  '<div class="e-arc"></div>',      // 1 开心
+  '<div class="e-sad"></div>',      // 2 委屈
+  '<div class="e-xx"></div>',       // 3 亲亲
+  '<div class="e-normal"></div>',   // 4 吐舌
+  '',                               // 5 wink（特殊处理）
+  '<div class="e-angry"></div>',    // 6 生气
+  '<div class="e-sad"></div>',      // 7 伤心
+  '<div class="e-line"></div>'      // 8 闭眼
+]
+
+function setEyes(n){
+  curE=n
+  if(n===5){
+    ELD.innerHTML='<div class="e-normal"></div>'
+    ERD.innerHTML='<div class="e-line"></div>'
+  } else {
+    ELD.innerHTML=eyeHTML[n]||''
+    ERD.innerHTML=eyeHTML[n]||''
+  }
 }
+
 function ex(n){
   var mc=['mo-nm','mo-hp','mo-cr','mo-ks','mo-tg','mo-nm','mo-ag','mo-sd']
   setEyes(n);MO.className='mo '+mc[n]
@@ -124,7 +144,23 @@ function sy(t){MS.textContent=t;MS.style.opacity='1';setTimeout(function(){MS.st
 function ht(){for(var i=0;i<4;i++){var h=document.createElement('div');h.className='ht-heart';h.textContent='♥';var s=8+Math.random()*8;h.style.fontSize=s+'px';h.style.left=(15+Math.random()*30)+'px';h.style.top=(18+Math.random()*20)+'px';h.style.color=['#FF4081','#FF80AB','#F48FB1'][Math.floor(Math.random()*3)];C.appendChild(h);var hs=Date.now();!function(e,s){function hf(){var a=(Date.now()-s)/1000;if(a>1.4){e.remove();return}var p=a/1.4;e.style.transform='translateY('+(-p*40)+'px)';e.style.opacity=(1-p).toFixed(2);requestAnimationFrame(hf)}hf()}(h,hs)}}
 function tap(){var e=Math.floor(Math.random()*8);ex(e);var m=msgs[e],msg=m[Math.floor(Math.random()*m.length)];sy(msg);ht();setTimeout(function(){ex(0)},2500)}
 function longpress(){td();var d=['素猫','项圈','+礼帽','+抽烟','全武装'];sy(d[dc])}
-!function anim(){var t=(Date.now()-t0)/1000;C.style.transform='translateY('+Math.sin(t*1.3)*3+'px)';bc-=16;if(bc<=0){EL.style.transform='scaleY(0.1)';ER.style.transform='scaleY(0.1)';setTimeout(function(){EL.style.transform='scaleY(1)';ER.style.transform='scaleY(1)'},100);bc=2500+Math.random()*2500}requestAnimationFrame(anim)}()
+
+// 眨眼：替换为闭眼线，100ms后恢复
+function blink(){
+  ELD.innerHTML='<div class="e-line"></div>'
+  ERD.innerHTML='<div class="e-line"></div>'
+  setTimeout(function(){
+    if(curE===5){
+      ELD.innerHTML='<div class="e-normal"></div>'
+      ERD.innerHTML='<div class="e-line"></div>'
+    } else {
+      ELD.innerHTML=eyeHTML[curE]||''
+      ERD.innerHTML=eyeHTML[curE]||''
+    }
+  },100)
+}
+
+!function anim(){var t=(Date.now()-t0)/1000;C.style.transform='translateY('+Math.sin(t*1.3)*3+'px)';bc-=16;if(bc<=0){blink();bc=2500+Math.random()*2500}requestAnimationFrame(anim)}()
 bc=2000;
 setInterval(function(){if(Math.random()<0.25){var e=Math.floor(Math.random()*8);ex(e);setTimeout(function(){ex(0)},3000)}},10000);
 </script></body></html>
