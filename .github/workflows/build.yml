@@ -23,17 +23,22 @@ jobs:
           gradle assembleDebug --stacktrace 2>&1 | tee build.log
       - name: Find APK
         run: |
-          find /home/runner -name "*.apk" -type f 2>/dev/null > apk-list.txt
-          cat apk-list.txt
-          if [ -s apk-list.txt ]; then
-            cp $(head -1 apk-list.txt) pet-overflow.apk
-            echo "APK found!"
-          else
-            echo "NO APK FOUND"
-            ls -la app/build/ 2>/dev/null || echo "no app/build dir"
-          fi
-      - name: Upload APK
+          echo "=== search workspace ==="
+          find $GITHUB_WORKSPACE -name "*.apk" -type f 2>/dev/null
+          echo "=== search gradle user home ==="
+          find /home/runner/.gradle -name "*.apk" -type f 2>/dev/null
+          echo "=== search android sdk ==="
+          find /usr/local/lib/android -name "*.apk" -type f 2>/dev/null
+          echo "=== build dir ==="
+          ls -laR build/ 2>/dev/null | head -30
+          echo "=== app build dir ==="
+          ls -laR app/build/ 2>/dev/null | head -30
+      - name: Try gradle properties
+        run: |
+          gradle properties 2>&1 | grep -i -E "buildDir|output|apk" | head -10
+      - name: Upload build log
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: pet-overflow-apk
-          path: pet-overflow.apk
+          name: build-log
+          path: build.log
