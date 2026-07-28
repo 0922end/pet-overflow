@@ -13,17 +13,17 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    -webkit-user-select: none;
+    user-select: none;
 }
 .whale-container {
     position: relative;
     width: 110px;
     height: 110px;
     cursor: pointer;
-    user-select: none;
     -webkit-user-select: none;
+    user-select: none;
 }
-
-/* 身体 - 圆滚滚版本 */
 .body {
     position: absolute;
     width: 80px;
@@ -33,9 +33,8 @@ body {
     top: 25px;
     left: 8px;
     box-shadow: 0 4px 20px rgba(13,71,161,0.3), inset -5px -5px 15px rgba(0,0,0,0.1), inset 5px 5px 15px rgba(255,255,255,0.15);
+    pointer-events: none;
 }
-
-/* 肚皮 */
 .belly {
     position: absolute;
     width: 45px;
@@ -44,9 +43,8 @@ body {
     border-radius: 50%;
     top: 45px;
     left: 20px;
+    pointer-events: none;
 }
-
-/* 尾巴 */
 .tail {
     position: absolute;
     right: -8px;
@@ -58,9 +56,8 @@ body {
     border-right: 22px solid #1E88E5;
     filter: drop-shadow(2px 0 4px rgba(30,136,229,0.4));
     transform-origin: left center;
+    pointer-events: none;
 }
-
-/* 眼睛 */
 .eye {
     position: absolute;
     width: 12px;
@@ -69,7 +66,7 @@ body {
     border-radius: 50%;
     top: 35px;
     left: 38px;
-    box-shadow: 0 0 4px rgba(0,0,0,0.1);
+    pointer-events: none;
 }
 .eye-shine {
     position: absolute;
@@ -79,10 +76,8 @@ body {
     border-radius: 50%;
     top: 36px;
     left: 40px;
-    box-shadow: 0 0 2px rgba(255,255,255,0.5);
+    pointer-events: none;
 }
-
-/* 腮红 */
 .blush {
     position: absolute;
     width: 14px;
@@ -92,9 +87,8 @@ body {
     top: 48px;
     left: 50px;
     transition: all 0.2s;
+    pointer-events: none;
 }
-
-/* 嘴巴 */
 .mouth {
     position: absolute;
     width: 10px;
@@ -103,9 +97,8 @@ body {
     border-radius: 0 0 50% 50%;
     top: 52px;
     left: 44px;
+    pointer-events: none;
 }
-
-/* 喷水 */
 .spout {
     position: absolute;
     top: 18px;
@@ -113,6 +106,7 @@ body {
     display: flex;
     gap: 2px;
     opacity: 0;
+    pointer-events: none;
 }
 .spout-drop {
     width: 4px;
@@ -120,8 +114,6 @@ body {
     background: linear-gradient(to bottom, rgba(100,181,246,0.8), rgba(100,181,246,0.2));
     border-radius: 50%;
 }
-
-/* 鱼鳍 */
 .fin {
     position: absolute;
     width: 18px;
@@ -131,18 +123,14 @@ body {
     top: 42px;
     left: -6px;
     transform: rotate(-25deg);
-    box-shadow: -2px 0 4px rgba(30,136,229,0.2);
+    pointer-events: none;
 }
-
-/* 爱心泡泡 */
 .heart {
     position: absolute;
     pointer-events: none;
     font-size: 16px;
     opacity: 0;
 }
-
-/* 对话框 */
 .msg {
     position: absolute;
     top: -38px;
@@ -211,22 +199,14 @@ var lines = [
 
 function anim() {
     var t = (Date.now() - t0) / 1000;
-
-    // 缓动浮游
     var fy = Math.sin(t * 1.1) * 5;
     var fr = Math.sin(t * 1.1) * 1.5;
     c.style.transform = 'translateY(' + fy + 'px) rotate(' + fr + 'deg)';
-
-    // 尾巴
     var tw = Math.sin(t * 2.2) * 10;
     tail.style.transform = 'rotate(' + tw + 'deg)';
-
-    // 眨眼（每3s一次）
     var bp = (t % 3) / 3;
     var ey = (bp > 0.92 && bp < 0.98) ? 0.1 : 1;
     eye.style.transform = 'scaleY(' + ey + ')';
-
-    // 喷水（每3.5s一次）
     var sp = (t % 3.5) / 3.5;
     if (sp < 0.25) {
         spout.style.opacity = (0.7 - sp * 2.8).toFixed(2);
@@ -234,7 +214,6 @@ function anim() {
     } else {
         spout.style.opacity = '0';
     }
-
     requestAnimationFrame(anim);
 }
 anim();
@@ -272,22 +251,17 @@ function hearts() {
     }
 }
 
-c.addEventListener('click', function(e) {
-    e.stopPropagation();
+// 供Android调用的点击入口
+function onTap() {
     say(lines[Math.floor(Math.random() * lines.length)]);
     hearts();
     blush.style.background = 'rgba(255,80,80,0.5)';
-    setTimeout(function() {
-        blush.style.background = 'rgba(255,150,150,0.35)';
-    }, 400);
-});
+    setTimeout(function() { blush.style.background = 'rgba(255,150,150,0.35)'; }, 400);
+}
 
 // 偶尔自己冒泡
 setInterval(function() {
-    if (Math.random() > 0.75) {
-        say('…');
-        hearts();
-    }
+    if (Math.random() > 0.75) { say('…'); hearts(); }
 }, 10000);
 </script>
 </body>
