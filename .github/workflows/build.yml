@@ -14,25 +14,53 @@ jobs:
           distribution: "temurin"
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+      - name: Fix build.gradle.kts
+        run: |
+          cat > app/build.gradle.kts << 'KTS_EOF'
+plugins {
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+}
+android {
+    namespace = "com.petoverflow.app"
+    compileSdk = 34
+    defaultConfig {
+        applicationId = "com.petoverflow.app"
+        minSdk = 26
+        targetSdk = 34
+        versionCode = 1
+        versionName = "1.0"
+    }
+    buildTypes {
+        release { isMinifyEnabled = false }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+    kotlinOptions { jvmTarget = "17" }
+}
+dependencies {
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("com.google.code.gson:gson:2.10.1")
+}
+KTS_EOF
+          cat app/build.gradle.kts
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.5"
-      - name: Generate Gradle Wrapper
-        run: gradle wrapper --gradle-version 8.5
-      - name: Build with Gradle Wrapper
-        run: ./gradlew assembleDebug --stacktrace 2>&1 | tee build.log
-      - name: Find and upload APK
+      - name: Build with Gradle
         run: |
-          find /github -name "*.apk" -type f 2>/dev/null | head -20
-          find /home -name "*.apk" -type f 2>/dev/null | head -20
-          find /root -name "*.apk" -type f 2>/dev/null | head -20
-          ls -laR /github/workspace/app/build/ 2>/dev/null | head -50
+          gradle assembleDebug --stacktrace 2>&1 | tee build.log
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: pet-overflow-apk
-          path: "**/*.apk"
+          path: "app/build/outputs/apk/debug/*.apk"
       - name: Upload build log
         if: always()
         uses: actions/upload-artifact@v4
