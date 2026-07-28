@@ -37,8 +37,7 @@ class OverlayService : Service() {
         else WindowManager.LayoutParams.TYPE_PHONE
         
         params = WindowManager.LayoutParams(300, 300, flag,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-            WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
             PixelFormat.TRANSLUCENT).apply {
             gravity = Gravity.TOP or Gravity.START
             x = 0; y = 200
