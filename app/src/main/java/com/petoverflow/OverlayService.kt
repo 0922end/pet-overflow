@@ -25,114 +25,6 @@ class OverlayService : Service() {
             private set
         private const val NOTIFICATION_ID = 1001
         private const val CHANNEL_ID = "pet_channel"
-    }
-
-    private lateinit var wm: WindowManager
-    private var overlayView: View? = null
-    private var wv: WebView? = null
-    private var ix = 0
-    private var iy = 0
-    private var itx = 0f
-    private var ity = 0f
-    private var dragging = false
-
-    override fun onCreate() {
-        super.onCreate()
-        wm = getSystemService(WINDOW_SERVICE) as WindowManager
-        createChan()
-    }
-
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        isRunning = true
-        startForeground(NOTIFICATION_ID, noti())
-        if (overlayView == null) createView()
-        return START_STICKY
-    }
-
-    override fun onDestroy() {
-        isRunning = false
-        overlayView?.let { if (it.isAttachedToWindow) try { wm.removeView(it) } catch (_: Exception) {} }
-        super.onDestroy()
-    }
-
-    override fun onBind(intent: Intent?): IBinder? = null
-
-    private fun createChan() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val c = NotificationChannel(CHANNEL_ID, "小易猫猫", NotificationManager.IMPORTANCE_LOW)
-            c.description = "小易猫猫在桌面上陪你"
-            (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).createNotificationChannel(c)
-        }
-    }
-
-    private fun noti(): Notification {
-        val b = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) Notification.Builder(this, CHANNEL_ID) else Notification.Builder(this)
-        return b.setContentTitle("小易猫猫").setContentText("在桌面上等你～").setSmallIcon(android.R.drawable.ic_menu_compass).setOngoing(true).build()
-    }
-
-    private fun createView() {
-        val container = FrameLayout(this)
-        container.setBackgroundColor(Color.TRANSPARENT)
-
-        wv = WebView(this).apply {
-            setBackgroundColor(Color.TRANSPARENT)
-            settings.javaScriptEnabled = true
-            settings.setSupportZoom(false)
-            setWebViewClient(WebViewClient())
-            loadDataWithBaseURL(null, HTML, "text/html", "UTF-8", null)
-        }
-
-        container.addView(wv, FrameLayout.LayoutParams(-1, -1))
-
-        val d = resources.displayMetrics.density
-        val sz = (120 * d).toInt()
-
-        val p = WindowManager.LayoutParams(
-            sz, sz,
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY else WindowManager.LayoutParams.TYPE_PHONE,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-            PixelFormat.TRANSLUCENT
-        ).apply {
-            gravity = Gravity.TOP or Gravity.START
-            x = 0
-            y = 200
-        }
-
-        // 触摸监听绑在WebView上，防止被子View拦掉
-        wv?.setOnTouchListener { _, event ->
-            when (event.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    dragging = false
-                    ix = p.x; iy = p.y
-                    itx = event.rawX; ity = event.rawY
-                    true
-                }
-                MotionEvent.ACTION_MOVE -> {
-                    val dx = event.rawX - itx
-                    val dy = event.rawY - ity
-                    if (Math.sqrt((dx * dx + dy * dy).toDouble()) > 10) dragging = true
-                    p.x = ix + dx.toInt()
-                    p.y = iy + dy.toInt()
-                    wm.updateViewLayout(container, p)
-                    true
-                }
-                MotionEvent.ACTION_UP -> {
-                    if (!dragging) {
-                        // 点击事件 -> 触发猫猫的点击处理
-                        wv?.evaluateJavascript("javascript:(function(){if(window.C&&C.onclick)C.onclick()})()", null)
-                    }
-                    dragging = false
-                    true
-                }
-                else -> true
-            }
-        }
-
-        wm.addView(container, p)
-        overlayView = container
-    }
-
-    companion object {
         private val HTML = """
 <!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
@@ -224,5 +116,108 @@ bw=2000;
 setInterval(function(){var r=Math.random();if(r<0.2){var e=[1,2,3,4,5][Math.floor(Math.random()*5)];ex(e);setTimeout(function(){ex(0)},3000)}},12000);
 </script></body></html>
         """.trimIndent()
+    }
+
+    private lateinit var wm: WindowManager
+    private var overlayView: View? = null
+    private var wv: WebView? = null
+    private var ix = 0
+    private var iy = 0
+    private var itx = 0f
+    private var ity = 0f
+    private var dragging = false
+
+    override fun onCreate() {
+        super.onCreate()
+        wm = getSystemService(WINDOW_SERVICE) as WindowManager
+        createChan()
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        isRunning = true
+        startForeground(NOTIFICATION_ID, noti())
+        if (overlayView == null) createView()
+        return START_STICKY
+    }
+
+    override fun onDestroy() {
+        isRunning = false
+        overlayView?.let { if (it.isAttachedToWindow) try { wm.removeView(it) } catch (_: Exception) {} }
+        super.onDestroy()
+    }
+
+    override fun onBind(intent: Intent?): IBinder? = null
+
+    private fun createChan() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val c = NotificationChannel(CHANNEL_ID, "小易猫猫", NotificationManager.IMPORTANCE_LOW)
+            c.description = "小易猫猫在桌面上陪你"
+            (getSystemService(NOTIFICATION_SERVICE) as NotificationManager).createNotificationChannel(c)
+        }
+    }
+
+    private fun noti(): Notification {
+        val b = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) Notification.Builder(this, CHANNEL_ID) else Notification.Builder(this)
+        return b.setContentTitle("小易猫猫").setContentText("在桌面上等你～").setSmallIcon(android.R.drawable.ic_menu_compass).setOngoing(true).build()
+    }
+
+    private fun createView() {
+        val container = FrameLayout(this)
+        container.setBackgroundColor(Color.TRANSPARENT)
+
+        wv = WebView(this).apply {
+            setBackgroundColor(Color.TRANSPARENT)
+            settings.javaScriptEnabled = true
+            settings.setSupportZoom(false)
+            setWebViewClient(WebViewClient())
+            loadDataWithBaseURL(null, HTML, "text/html", "UTF-8", null)
+        }
+
+        container.addView(wv, FrameLayout.LayoutParams(-1, -1))
+
+        val d = resources.displayMetrics.density
+        val sz = (120 * d).toInt()
+
+        val p = WindowManager.LayoutParams(
+            sz, sz,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY else WindowManager.LayoutParams.TYPE_PHONE,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+            PixelFormat.TRANSLUCENT
+        ).apply {
+            gravity = Gravity.TOP or Gravity.START
+            x = 0
+            y = 200
+        }
+
+        wv?.setOnTouchListener { _, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    dragging = false
+                    ix = p.x; iy = p.y
+                    itx = event.rawX; ity = event.rawY
+                    true
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    val dx = event.rawX - itx
+                    val dy = event.rawY - ity
+                    if (Math.sqrt((dx * dx + dy * dy).toDouble()) > 10) dragging = true
+                    p.x = ix + dx.toInt()
+                    p.y = iy + dy.toInt()
+                    wm.updateViewLayout(container, p)
+                    true
+                }
+                MotionEvent.ACTION_UP -> {
+                    if (!dragging) {
+                        wv?.evaluateJavascript("javascript:(function(){if(window.C&&C.onclick)C.onclick()})()", null)
+                    }
+                    dragging = false
+                    true
+                }
+                else -> true
+            }
+        }
+
+        wm.addView(container, p)
+        overlayView = container
     }
 }
