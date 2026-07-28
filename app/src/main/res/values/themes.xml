@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.PetOverflow" parent="Theme.AppCompat.Light.DarkActionBar">
-        <item name="colorPrimary">#f5a623</item>
-        <item name="colorPrimaryDark">#d4891e</item>
-        <item name="colorAccent">#ff6b9d</item>
-    </style>
-    <style name="Theme.PetOverflow.Transparent" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowBackground">@transparent</item>
+    <style name="Theme.PetOverflow" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">#1976D2</item>
+        <item name="colorPrimaryVariant">#1565C0</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSecondary">#42A5F5</item>
+        <item name="colorSecondaryVariant">#2196F3</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="android:statusBarColor">#1565C0</item>
     </style>
 </resources>

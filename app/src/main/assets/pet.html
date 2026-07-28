@@ -2,76 +2,228 @@
 <html>
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <style>
-  * {margin:0;padding:0;box-sizing:border-box;}
-  body{background:transparent;overflow:hidden;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-family:'Segoe UI',sans-serif;}
-  #pet-container{position:relative;width:100px;height:100px;display:flex;align-items:center;justify-content:center;}
-  #pet-svg{width:80px;height:80px;transition:transform 0.3s ease;}
-  #pet-svg:active{transform:scale(0.9);}
-  #bubble{position:absolute;top:-40px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,0.95);color:#333;padding:6px 12px;border-radius:12px;font-size:12px;white-space:nowrap;max-width:160px;text-overflow:ellipsis;opacity:0;transition:opacity 0.3s,transform 0.3s;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,0.15);}
-  #bubble.show{opacity:1;}
-  #bubble.pink{background:#ffe0ec;color:#c44569;}
-  #bubble.whisper{background:#e8e8e8;color:#666;}
-  #bubble.roar{background:#ff6b6b;color:white;}
-  #bubble.jealous{background:#b8e994;color:#218c53;}
-  @keyframes bounce{0%,100%{transform:translateY(0);}50%%í™9™½ÉºtranslateY(-8px);}}
-  @keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-4px);}75%{transform:translateX(4px);}}
-  .animate-bounce{animation:bounce 0.6s ease;}
-  .animate-shake{animation:shake 0.3s ease;}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    background: transparent;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.whale-container {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(-2deg); }
+    50% { transform: translateY(-8px) rotate(2deg); }
+}
+
+.whale {
+    width: 100px;
+    height: 80px;
+    background: radial-gradient(ellipse at 60% 50%, #42A5F5 0%, #1565C0 60%, #0D47A1 100%);
+    border-radius: 50% 50% 45% 45%;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(21, 101, 192, 0.4);
+}
+
+.whale-tail {
+    position: absolute;
+    right: -22px;
+    top: 20px;
+    width: 0;
+    height: 0;
+    border-top: 18px solid transparent;
+    border-bottom: 18px solid transparent;
+    border-right: 25px solid #1565C0;
+    filter: drop-shadow(2px 0 3px rgba(21,101,192,0.3));
+    animation: tailWag 1.5s ease-in-out infinite;
+}
+
+@keyframes tailWag {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(10deg); }
+}
+
+.whale-eye {
+    position: absolute;
+    width: 10px;
+    height: 12px;
+    background: #1A237E;
+    border-radius: 50%;
+    top: 28px;
+    left: 38px;
+    animation: blink 4s ease-in-out infinite;
+}
+
+@keyframes blink {
+    0%, 96%, 100% { transform: scaleY(1); }
+    98% { transform: scaleY(0.1); }
+}
+
+.whale-eye-shine {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: white;
+    border-radius: 50%;
+    top: 30px;
+    left: 40px;
+}
+
+.whale-cheek {
+    position: absolute;
+    width: 12px;
+    height: 7px;
+    background: rgba(255, 150, 150, 0.4);
+    border-radius: 50%;
+    top: 42px;
+    left: 48px;
+}
+
+.whale-mouth {
+    position: absolute;
+    width: 12px;
+    height: 4px;
+    border-bottom: 2px solid #0D47A1;
+    border-radius: 0 0 50% 50%;
+    top: 45px;
+    left: 42px;
+}
+
+.whale-belly {
+    position: absolute;
+    width: 50px;
+    height: 35px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 50%;
+    top: 38px;
+    left: 18px;
+}
+
+.whale-spout {
+    position: absolute;
+    top: -5px;
+    left: 40px;
+    display: flex;
+    gap: 2px;
+    animation: spoutAnim 2s ease-in-out infinite;
+    opacity: 0;
+}
+
+@keyframes spoutAnim {
+    0%, 100% { opacity: 0; transform: translateY(0); }
+    30% { opacity: 0.8; transform: translateY(-5px); }
+    60% { opacity: 0.3; transform: translateY(-3px); }
+}
+
+.spout-drop {
+    width: 4px;
+    height: 8px;
+    background: rgba(66, 165, 245, 0.6);
+    border-radius: 50%;
+}
+
+.fin {
+    position: absolute;
+    width: 22px;
+    height: 16px;
+    background: #1E88E5;
+    border-radius: 50% 50% 0 0;
+    top: 32px;
+    left: -8px;
+    transform: rotate(-20deg);
+}
+
+.bubble {
+    position: absolute;
+    background: radial-gradient(circle at 30% 30%, rgba(255,100,150,0.8), rgba(255,50,100,0.4));
+    border-radius: 50%;
+    pointer-events: none;
+    animation: bubbleUp 1.5s ease-out forwards;
+    box-shadow: 0 0 10px rgba(255,50,100,0.3);
+}
+
+.bubble::before {
+    content: 'â™¥';
+    position: absolute;
+    font-size: inherit;
+    color: rgba(255,80,120,0.9);
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+@keyframes bubbleUp {
+    0% {
+        transform: translateY(0) scale(0.5);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-80px) scale(1.2);
+        opacity: 0;
+    }
+}
 </style>
 </head>
 <body>
-<div id="pet-container">
-  <div id="bubble"></div>
-  <svg id="pet-svg" viewBox="0 0 100 100">
-    <ellipse cx="50" cy="58" rx="32" ry="30" fill="#f5a623"/>
-    <polygon points="22,32 30,18 38,32" fill="#f5a623"/>
-    <polygon points="62,32 70,18 78,32" fill="#f5a623"/>
-    <polygon points="26,32 30,24 36,32" fill="#ffced1"/>
-    <polygon points="64,32 70,24 76,32" fill="#ffced1"/>
-    <ellipse id="left-eye" cx="38" cy="50" rx="5" ry="6" fill="#333"/>
-    <ellipse id="right-eye" cx="62" cy="50" rx="5" ry="6" fill="#333"/>
-    <circle cx="40" cy="47" r="2" fill="white"/>
-    <circle cx="64" cy="47" r="2" fill="white"/>
-    <ellipse cx="50" cy="56" rx="3" ry="2" fill="#e88"/>
-    <path id="mouth" d="M44,62 Q50,68 56,62" stroke="#333" stroke-width="2" fill="none"/>
-    <line x1="20" y1="52" x2="34" y2="54" stroke="#999" stroke-width="1"/>
-    <line x1="20" y1="58" x2="34" y2="56" stroke="#999" stroke-width="1"/>
-    <line x1="80" y1="52" x2="66" y2="54" stroke="#999" stroke-width="1"/>
-    <line x1="80" y1="58" x2="66" y2="56" stroke="#999" stroke-width="1"/>
-    <ellipse id="blush-left" cx="28" cy="56" rx="6" ry="4" fill="#ff8a8a" opacity="0"/>
-    <ellipse id="blush-right" cx="72" cy="56" rx="6" ry="4" fill="#ff8a8a" opacity="0"/>
-  </svg>
-  <div id="heat-overlay"></div>
+<div class="whale-container" id="whaleContainer">
+    <div class="whale">
+        <div class="whale-belly"></div>
+        <div class="whale-eye"></div>
+        <div class="whale-eye-shine"></div>
+        <div class="whale-cheek"></div>
+        <div class="whale-mouth"></div>
+        <div class="fin"></div>
+        <div class="whale-spout">
+            <div class="spout-drop"></div>
+            <div class="spout-drop"></div>
+            <div class="spout-drop"></div>
+        </div>
+    </div>
+    <div class="whale-tail"></div>
 </div>
+
 <script>
-  const bubble = document.getElementById('bubble')
-  const mouth = document.getElementById('mouth')
-  const blush = [document.getElementById('blush-left'), document.getElementById('blush-right')]
-  
-  function setExpression(expr) {
-    document.getElementById('left-eye').fill = '#333'
-    document.getElementById('right-eye').fill = '#333'
-    document.getElementById('pet-svg').classList.remove('animate-bounce', 'animate-shake')
-    
-    switch(expr) {
-      case 'idle': mouth.setAttribute('d', 'M44,62 Q50,68 56,62'); break
-      case 'happy': mouth.setAttribute('d', 'M42,60 Q50,70 58,60'); break
-      case 'sad': mouth.setAttribute('d', 'M44,66 Q50,60 56,66'); break
-      case 'angry': mouth.setAttribute('d', 'M44,62 Q50,62 56,62'); break
-      case 'blush': mouth.setAttribute('d', 'M44,62 Q50,66 56,62'); break
-      case 'sleep': mouth.setAttribute('d', 'M44,64 Q50,64 56,64'); break
-      case 'love': mouth.setAttribute('d', 'M42,60 Q50,70 58,60'); break
-      case 'surprise': mouth.setAttribute('d', 'M46,60 Q50,68 54,60'); break
+function bubble() {
+    const container = document.getElementById('whaleContainer');
+    for (let i = 0; i < 5; i++) {
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        const size = 15 + Math.random() * 20;
+        bubble.style.width = size + 'px';
+        bubble.style.height = size + 'px';
+        bubble.style.fontSize = (size * 0.6) + 'px';
+        bubble.style.left = (30 + Math.random() * 40) + 'px';
+        bubble.style.top = (20 + Math.random() * 20) + 'px';
+        bubble.style.animationDelay = (i * 0.1) + 's';
+        bubble.style.animationDuration = (1.2 + Math.random() * 0.6) + 's';
+        container.appendChild(bubble);
+
+        setTimeout(() => {
+            bubble.remove();
+        }, 2000);
     }
-  }
-  
-  function showBubble(text, style) {
-    bubble.textContent = text
-    bubble.className = 'show' + (style && style !== 'normal' ? ' ' + style : '')
-    setTimeout(() => bubble.className = '', 4000)
-  }
+}
+
+document.addEventListener('click', function(e) {
+    bubble();
+});
+
+setInterval(function() {
+    if (Math.random() > 0.7) {
+        bubble();
+    }
+}, 8000);
 </script>
 </body>
 </html>
