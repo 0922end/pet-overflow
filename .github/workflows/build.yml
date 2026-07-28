@@ -23,7 +23,7 @@ jobs:
           gradle assembleDebug --stacktrace 2>&1 | tee build.log
       - name: Find APK
         run: |
-          find /home/runner /github -name "*.apk" -type f 2>/dev/null > apk-list.txt
+          find /home/runner -name "*.apk" -type f 2>/dev/null > apk-list.txt
           cat apk-list.txt
           if [ -s apk-list.txt ]; then
             cp $(head -1 apk-list.txt) pet-overflow.apk
